@@ -34,14 +34,18 @@ public class BankRepl {
 
     private void handle(String command){
         switch(command){
-            case "help":
-                System.out.println("Available commands: help, exit");
-                break;
-            case "add":
-                makeAccount();
-                break;
-            default:
-                throw new IllegalArgumentException(command);
+            case "help" -> System.out.println("Available commands: help, add, exit");
+            case "add" -> makeAccount();
+            case "login" -> {Account account = login(); handleLogin(account); }
+            default -> throw new IllegalArgumentException(command);
+        }
+    }
+
+    private void handleLogin(Account account){
+        if(account != null) {
+            System.out.println("Login successful.");
+        } else {
+            System.out.println("Login failed.");
         }
     }
 
@@ -55,6 +59,29 @@ public class BankRepl {
         int pin = in.nextInt();
         in.nextLine(); // consume the newline character after the integer input
 
-        accountService.createAccount(new Account(pin, fullName));
+        try {
+            int accountId = accountService.createAccount(new Account(pin, fullName));
+            System.out.println("Your account number is: " + accountId + " ensure you remember this.");
+        } catch (Exception e) {
+            System.out.println("Failed to create account.");
+        }
+    }
+
+    private Account login(){
+        System.out.println("Enter Account Id and PIN");
+        System.out.print("Account Id: ");
+        int accountId = in.nextInt();
+        System.out.print("PIN: ");
+        int pin = in.nextInt();
+        in.nextLine(); // consume the newline character after the integer input
+
+        try {
+            Account account = accountService.login(accountId, pin);
+            System.out.println("Welcome, " + account.getFullName() + "! Your balance is: " + account.getBalance());
+            return account;
+        } catch (Exception e) {
+            System.out.println("Login failed: " + e.getMessage());
+            return null;
+        }
     }
 }

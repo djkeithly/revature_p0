@@ -3,5 +3,8 @@ package com.revature.persistance;
 import com.revature.domain.Account;
 
 public interface AccountDAO {
-    void createAccount(Account newAccount);
+    // Must be int to return account_id
+    int createAccount(Account newAccount);
+
+    Account login(int accountId, int pin);
 }

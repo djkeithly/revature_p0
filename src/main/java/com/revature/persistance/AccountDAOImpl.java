@@ -16,7 +16,10 @@ public class AccountDAOImpl implements AccountDAO {
             );
             """;
 
-    private static final String INSERT_ACCOUNT_SQL = "INSERT INTO account (pin, full_name) VALUES (?, ?)";
+    // Inserts value into bank, zero in account balance by default
+    // Auto generates id, and then returns it so that we can display it
+    private static final String INSERT_ACCOUNT_SQL = "INSERT INTO account (pin, full_name) VALUES (?, ?) RETURNING account_id";
+    private static final String LOGIN_SQL = "SELECT account_id, pin, full_name, balance FROM account WHERE account_id = ? AND pin = ?";
 
     public AccountDAOImpl() {
         initializeSchema();
@@ -36,15 +39,53 @@ public class AccountDAOImpl implements AccountDAO {
     }
 
     @Override
-    public void createAccount(Account newAccount) {
-        // Implementation for adding an account goes here
+    public int createAccount(Account newAccount) {
+        
         try(Connection connection = ConnectionFactory.getConnectionFactory().getConnection();
             PreparedStatement statement = connection.prepareStatement(INSERT_ACCOUNT_SQL)) {
+                // Ensures that failure can be rolled back
+                connection.setAutoCommit(false);
+
+                // Set data
                 statement.setInt(1, newAccount.getAccountPin());
                 statement.setString(2, newAccount.getFullName());
-                statement.executeUpdate();
+
+                // Executes and is returned 1 account_id to return to the user
+                var resultSet = statement.executeQuery();
+
+                // Assuming the account_id was generated successfully, commit and return else rollback
+                if (resultSet.next()) {
+                    int accountId = resultSet.getInt(1);
+                    connection.commit();
+                    return accountId;
+                } else {
+                    connection.rollback();
+                    throw new IllegalStateException("Failed to retrieve generated account_id");
+                }
         } catch (SQLException e){
                 throw databaseError("Could not add account", (SQLException) e);
          }
     }
+
+    // Checks if account credentials are valid and returns the corresponding Account object
+    @Override 
+    public Account login(int accountId, int pin) {
+        try(Connection connection = ConnectionFactory.getConnectionFactory().getConnection();
+            PreparedStatement statement = connection.prepareStatement(LOGIN_SQL)) {
+                statement.setInt(1, accountId);
+                statement.setInt(2, pin);
+                var resultSet = statement.executeQuery();
+                if(resultSet.next()){
+                    int id = resultSet.getInt("account_id");
+                    int accountPin = resultSet.getInt("pin");
+                    String fullName = resultSet.getString("full_name");
+                    double balance = resultSet.getDouble("balance");
+                    return new Account(accountPin, id, fullName, balance);
+                } else {
+                    throw new IllegalStateException("Invalid accountId or pin");
+                }
+        } catch (SQLException e){
+            throw databaseError("Could not login", e);
+        }
+   }
 }

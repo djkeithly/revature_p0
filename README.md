@@ -8,3 +8,15 @@ docker run --name repl-bank-db \
   -p 5432:5432 \
   -d postgres
 ```
+
+To compile:
+
+```bash
+mvn compile
+```
+
+To run the application:
+
+```bash
+mvn exec:java '-Dexec.mainClass=com.revature.api.Main'
+```
