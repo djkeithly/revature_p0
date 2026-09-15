@@ -28,7 +28,7 @@ public class ConnectionFactory {
         try {
             return DriverManager.getConnection(
                     props.getProperty("DB_URL"),
-                    props.getProperty("DB_USER"),
+                    props.getProperty("DB_USERNAME"),
                     props.getProperty("DB_PASSWORD"));
         } catch (SQLException e) {
             throw new IllegalStateException("Could not connect to the database", e);
