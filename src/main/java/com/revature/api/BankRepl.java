@@ -53,8 +53,9 @@ public class BankRepl {
     // Basic command handling for when a user is logged in. Allows personal actions
     private void handleLogin(String command){
         switch(command){
-            case "help" -> System.out.println("Available commands: help, balance, deposit, logout");
+            case "help" -> System.out.println("Available commands: help, balance, deposit, withdraw, logout");
             case "deposit" -> deposit();
+            case "withdraw" -> withdraw();
             case "balance" -> System.out.println("Your balance is: " + loggedInAccount.getBalance());
             case "logout" -> loggedInAccount = null;
             default -> throw new IllegalArgumentException(command);
@@ -108,7 +109,28 @@ public class BankRepl {
         }
 
         try {
-            transactionService.oneAccountAction(loggedInAccount.getAccountId(), amount);
+            loggedInAccount =transactionService.oneAccountAction(loggedInAccount.getAccountId(), amount);
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+    }
+
+    private void withdraw(){
+        System.out.print("How much to withdraw: ");
+        int amount = in.nextInt();
+        in.nextLine();
+
+        if(amount <= 0){
+            System.out.println("Amount to withdraw must be greater than 0");
+            return;
+        }
+        if(amount > loggedInAccount.getBalance()){
+            System.out.println("Amount to withdraw exceeds your current balance");
+            return;
+        }
+
+        try {
+            loggedInAccount = transactionService.oneAccountAction(loggedInAccount.getAccountId(), -amount);
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }

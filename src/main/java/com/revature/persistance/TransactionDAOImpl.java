@@ -53,7 +53,7 @@ public class TransactionDAOImpl implements TransactionDAO {
     }
 
     @Override
-    public void deposit(int fromAccountId, double amount){
+    public Account deposit(int fromAccountId, double amount){
         Connection connection = null;
 
         try{
@@ -73,7 +73,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 
             if(account != null){
                 connection.commit();
-                //return account;
+                return account;
             }
         } catch (Exception e) {
             if(connection != null){
@@ -92,18 +92,49 @@ public class TransactionDAOImpl implements TransactionDAO {
                 System.out.println("Fatal Error: " + e);
             }
         }}
+        return null;
     }
 
     @Override 
-    public void withdraw(int fromAccountId, double amount){
-        try(Connection connection = ConnectionFactory.getConnectionFactory().getConnection();
-        PreparedStatement statement = connection.prepareStatement(INSERT_WITHDRAWAL_SQL)) {
+    public Account withdraw(int fromAccountId, double amount){
+        Connection connection = null;
+
+        try{
+            connection = ConnectionFactory.getConnectionFactory().getConnection();
+            PreparedStatement statement = connection.prepareStatement(INSERT_WITHDRAWAL_SQL);
+
+            // Begin transaction for deposit operation
+            connection.setAutoCommit(false);
+
+            // Handle create deposit record
             statement.setInt(1, fromAccountId);
             statement.setDouble(2, amount);
+            statement.executeUpdate();
 
-            statement.execute();
+            // Handle updating the user
+            Account account = accountDAO.updateBalance(fromAccountId, amount);
+
+            if(account != null){
+                connection.commit();
+                return account;
+            }
         } catch (Exception e) {
-            throw databaseError("Error depositing", (SQLException) e);
-        }
+            if(connection != null){
+                try {
+                    connection.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Fatal Error: " + e);
+                }
+            }
+            throw new IllegalStateException("Error withdrawing", e);
+        } finally {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                System.out.println("Fatal Error: " + e);
+            }
+        }}
+    return null;
     }
 }

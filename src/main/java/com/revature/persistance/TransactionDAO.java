@@ -1,7 +1,9 @@
 package com.revature.persistance;
 
-public interface TransactionDAO {
-    void deposit(int fromAccountId, double amount);
+import com.revature.domain.Account;
 
-    void withdraw(int fromAccountId, double amount);
+public interface TransactionDAO {
+    Account deposit(int fromAccountId, double amount);
+
+    Account withdraw(int fromAccountId, double amount);
 }

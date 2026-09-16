@@ -1,5 +1,6 @@
 package com.revature.serivce;
 
+import com.revature.domain.Account;
 import com.revature.persistance.TransactionDAO;
 
 public class TransactionServiceImpl implements TransactionService {
@@ -10,18 +11,18 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override 
-    public void oneAccountAction(int fromAccountId, double amount){
+    public Account oneAccountAction(int fromAccountId, double amount){
 
         if(amount > 0){
             try {
-               transactionDAO.deposit(fromAccountId, amount);
+               return transactionDAO.deposit(fromAccountId, amount);
             } catch (Exception e) {
                 System.out.println("Error making deposit: s" + e);
             }
         }
         else if(amount < 0){
             try {
-                
+                return transactionDAO.withdraw(fromAccountId, amount);
             } catch (Exception e) {
                 System.out.println("Error making withdraw " + e);
             }
@@ -29,5 +30,6 @@ public class TransactionServiceImpl implements TransactionService {
         else{
             System.out.println("Error: No transaction action");
         }
+        return null;
     }
 }
