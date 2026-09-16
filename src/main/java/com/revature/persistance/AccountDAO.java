@@ -9,4 +9,8 @@ public interface AccountDAO {
     Account login(int accountId, int pin);
 
     Account updateBalance(int accountId, double amount);
+
+    void updatePin(int accountId, int newPin);
+
+    void deleteAccount(int accountId);
 }

@@ -55,12 +55,14 @@ public class BankRepl {
     // Basic command handling for when a user is logged in. Allows personal actions
     private void handleLogin(String command){
         switch(command){
-            case "help" -> System.out.println("Available commands: help, balance, deposit, withdraw, transfer, history, logout, exit");
+            case "help" -> System.out.println("Available commands: help, balance, deposit, withdraw, transfer, update pin, delete account, history, logout, exit");
             case "deposit" -> deposit();
             case "withdraw" -> withdraw();
             case "transfer" -> transfer();
             case "history" -> showHistory(); 
             case "balance" -> System.out.println("Your balance is: " + loggedInAccount.getBalance());
+            case "update pin" -> updatePin();
+            case "delete account" -> deleteAccount();
             case "logout" -> loggedInAccount = null;
             default -> throw new IllegalArgumentException(command);
         }
@@ -172,5 +174,49 @@ public class BankRepl {
         } catch (Exception e) {
             System.out.println("Error retrieving transaction history: " + e);
         }
+    }
+
+    public void updatePin(){
+        System.out.print("Enter old PIN: ");
+        int oldPin = in.nextInt();
+        System.out.print("Enter new PIN: ");
+        int newPin = in.nextInt();
+        in.nextLine();
+
+        try {
+            accountService.updatePin(loggedInAccount.getAccountId(), oldPin, newPin);
+        } catch (Exception e) {
+            System.out.println("Error updating PIN: " + e);
+        }
+    }
+
+    public void deleteAccount(){
+        System.out.print("Are you sure you want to delete your account (y/n): ");
+        int pin;
+
+        try{
+            String confirm = in.nextLine();
+            if(confirm.toLowerCase().equals("n"))
+                return;
+            else if (!confirm.toLowerCase().equals("y")){
+                System.out.println("Invalid input, cancelling request");
+                return;
+            }
+
+            System.out.print("Enter PIN: ");
+            pin = in.nextInt();
+            in.nextLine();
+        } catch (Exception e){
+            System.out.println("Invalid input, cancelling request");
+            return;
+        }
+
+        try {
+            accountService.deleteAccount(loggedInAccount.getAccountId(), pin);
+            loggedInAccount = null;
+        } catch (Exception e) {
+            System.out.println("Error Creating Account: " + e);
+        }
+    
     }
 }

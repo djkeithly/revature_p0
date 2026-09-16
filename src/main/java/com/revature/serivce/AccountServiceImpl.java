@@ -34,4 +34,29 @@ public class AccountServiceImpl implements AccountService {
             throw new IllegalStateException("Failed to login", e);
         }
     }
+
+    @Override
+    public void updatePin(int accountId, int oldPin, int newPin) {
+        try {
+            Account account = accountDAO.login(accountId, oldPin);
+            if (account == null) {
+                throw new IllegalArgumentException("Old PIN is incorrect");
+            }
+            accountDAO.updatePin(accountId, newPin);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to update PIN", e);
+        }
+    }
+
+    @Override 
+    public void deleteAccount(int accountId, int pin){
+        try {
+            Account account = accountDAO.login(accountId, pin);
+            if(account == null){
+                throw new IllegalArgumentException("Incorrect PIN");
+            }
+            accountDAO.deleteAccount(accountId);
+        } catch (Exception e) {
+        }
+    }
 }
