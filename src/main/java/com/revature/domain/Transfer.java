@@ -1,31 +1,21 @@
 package com.revature.domain;
 
 public class Transfer {
-    private int fromAccountId;
-    private int toAccountId;
-    private double amount;
-    private String type;
-    private String timestamp;
+    private final int id;
+    private final int fromAccountId;
+    private final int toAccountId;
+    private final double amount;
+    private final String type;
+    private final String timestamp;
 
     // Two account transfer logic
-    public Transfer(int fromAccountId, int toAccountId, double amount){
+    public Transfer(int id, int fromAccountId, String type, double amount, int toAccountId, String timestamp){
+        this.id = id;
         this.fromAccountId = fromAccountId;
+        this.type = type;
+        this.amount = amount;
         this.toAccountId = toAccountId;
-        this.amount = amount;
-        this.type = "Transfer";
-        this.timestamp = java.time.LocalDateTime.now().toString();
-    }
-
-    // One account transfer logic
-    public Transfer(int fromAccountId, double amount){
-        this.fromAccountId = fromAccountId;
-        this.amount = amount;
-        if(amount >= 0){
-            this.type = "Deposit";
-        } else {
-            this.type = "Withdrawal";
-        }
-        this.timestamp = java.time.LocalDateTime.now().toString();
+        this.timestamp = timestamp;
     }
 
     public int getFromAccountId(){
@@ -46,5 +36,16 @@ public class Transfer {
 
     public String getType(){
         return type;
+    }
+
+    @Override 
+    public String toString(){
+        return "Transfer id: " + id +
+                " [fromAccountId=" + fromAccountId +
+                ", toAccountId=" + toAccountId +
+                ", amount=" + amount +
+                ", type='" + type + '\'' +
+                ", timestamp='" + timestamp + '\'' +
+                ']';
     }
 }

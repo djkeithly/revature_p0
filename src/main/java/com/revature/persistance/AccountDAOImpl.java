@@ -11,15 +11,14 @@ public class AccountDAOImpl implements AccountDAO {
             CREATE TABLE IF NOT EXISTS account(
                 account_id      INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                 pin             INTEGER NOT NULL,
-                full_name       VARCHAR(255),
                 balance         NUMERIC DEFAULT 0.00
             );
             """;
 
     // Inserts value into bank, zero in account balance by default
     // Auto generates id, and then returns it so that we can display it
-    private static final String INSERT_ACCOUNT_SQL = "INSERT INTO account (pin, full_name) VALUES (?, ?) RETURNING account_id;";
-    private static final String LOGIN_SQL = "SELECT account_id, pin, full_name, balance FROM account WHERE account_id = ? AND pin = ?;";
+    private static final String INSERT_ACCOUNT_SQL = "INSERT INTO account (pin) VALUES (?) RETURNING account_id;";
+    private static final String LOGIN_SQL = "SELECT account_id, pin, balance FROM account WHERE account_id = ? AND pin = ?;";
     private static final String UPDATE_BALANCE_SQL = "UPDATE account SET balance = balance + ? WHERE account_id = ? RETURNING *;";
 
     public AccountDAOImpl() {
@@ -49,7 +48,6 @@ public class AccountDAOImpl implements AccountDAO {
 
                 // Set data
                 statement.setInt(1, newAccount.getAccountPin());
-                statement.setString(2, newAccount.getFullName());
 
                 // Executes and is returned 1 account_id to return to the user
                 var resultSet = statement.executeQuery();
@@ -79,9 +77,8 @@ public class AccountDAOImpl implements AccountDAO {
                 if(resultSet.next()){
                     int id = resultSet.getInt("account_id");
                     int accountPin = resultSet.getInt("pin");
-                    String fullName = resultSet.getString("full_name");
                     double balance = resultSet.getDouble("balance");
-                    return new Account(accountPin, id, fullName, balance);
+                    return new Account(accountPin, id, balance);
                 } else {
                     throw new IllegalStateException("Invalid accountId or pin");
                 }
@@ -102,9 +99,8 @@ public class AccountDAOImpl implements AccountDAO {
                 if(resultSet.next()){
                     int id = resultSet.getInt("account_id");
                     int accountPin = resultSet.getInt("pin");
-                    String fullName = resultSet.getString("full_name");
                     double balance = resultSet.getDouble("balance");
-                    return new Account(accountPin, id, fullName, balance);
+                    return new Account(accountPin, id, balance);
                 } else {
                     throw new IllegalStateException("Invalid account");
                 }

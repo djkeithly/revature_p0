@@ -1,8 +1,10 @@
 package com.revature.api;
 
+import java.util.List;
 import java.util.Scanner;
 
 import com.revature.domain.Account;
+import com.revature.domain.Transfer;
 import com.revature.serivce.AccountService;
 import com.revature.serivce.TransactionService;
 
@@ -53,27 +55,25 @@ public class BankRepl {
     // Basic command handling for when a user is logged in. Allows personal actions
     private void handleLogin(String command){
         switch(command){
-            case "help" -> System.out.println("Available commands: help, balance, deposit, withdraw, logout");
+            case "help" -> System.out.println("Available commands: help, balance, deposit, withdraw, transfer, history, logout, exit");
             case "deposit" -> deposit();
             case "withdraw" -> withdraw();
+            case "transfer" -> transfer();
+            case "history" -> showHistory(); 
             case "balance" -> System.out.println("Your balance is: " + loggedInAccount.getBalance());
             case "logout" -> loggedInAccount = null;
             default -> throw new IllegalArgumentException(command);
         }
     }
     
-    // Needs to collect name and pin. ID will be auto-generated and balance will default to 0.00
+    // Needs to collect pin. ID will be auto-generated and balance will default to 0.00
     private void makeAccount(){
-        System.out.println("Full name: ");
-        String fullName = in.nextLine();
-
-
         System.out.println("Pin number: ");
         int pin = in.nextInt();
         in.nextLine(); // consume the newline character after the integer input
 
         try {
-            int accountId = accountService.createAccount(new Account(pin, fullName));
+            int accountId = accountService.createAccount(new Account(pin));
             System.out.println("Your account number is: " + accountId + " ensure you remember this.");
         } catch (Exception e) {
             System.out.println("Failed to create account.");
@@ -90,7 +90,7 @@ public class BankRepl {
 
         try {
             Account account = accountService.login(accountId, pin);
-            System.out.println("Welcome, " + account.getFullName() + "! Your balance is: " + account.getBalance());
+            System.out.println("Welcome, " + account.getAccountId() + ". Your balance is: " + account.getBalance());
             return account;
         } catch (Exception e) {
             System.out.println("Login failed: " + e.getMessage());
@@ -133,6 +133,44 @@ public class BankRepl {
             loggedInAccount = transactionService.oneAccountAction(loggedInAccount.getAccountId(), -amount);
         } catch (Exception e) {
             System.out.println("Error: " + e);
+        }
+    }
+
+    public void transfer(){
+        System.out.print("Transfer from your account to account id: ");
+        int toAccountId = in.nextInt();
+        System.out.print("Amount to transfer: ");
+        int amount = in.nextInt();
+        in.nextLine();
+
+        if(amount <= 0){
+            System.out.println("Amount to transfer must be greater than 0");
+            return;
+        }
+        if(amount > loggedInAccount.getBalance()){
+            System.out.println("Amount to transfer exceeds your current balance");
+            return;
+        }
+
+        try {
+            loggedInAccount = transactionService.twoAccountAction(loggedInAccount.getAccountId(), toAccountId, amount);
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+    }
+
+    public void showHistory(){
+        try {
+            List<Transfer> transfers = transactionService.getAllTransactions(loggedInAccount.getAccountId());
+            if (transfers == null || transfers.isEmpty()) {
+                System.out.println("No transaction history available.");
+            } else {
+                for (Transfer transfer : transfers) {
+                    System.out.println(transfer);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error retrieving transaction history: " + e);
         }
     }
 }
