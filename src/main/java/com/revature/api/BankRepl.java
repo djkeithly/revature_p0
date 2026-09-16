@@ -4,14 +4,17 @@ import java.util.Scanner;
 
 import com.revature.domain.Account;
 import com.revature.serivce.AccountService;
+import com.revature.serivce.TransactionService;
 
 public class BankRepl {
     private final Scanner in = new Scanner(System.in);
     private final AccountService accountService;
+    private final TransactionService transactionService;
     private Account loggedInAccount;
 
-    public BankRepl(AccountService accountService) {
+    public BankRepl(AccountService accountService, TransactionService transactionService) {
         this.accountService = accountService;
+        this.transactionService = transactionService;
     }
 
     public void run(){
@@ -50,7 +53,8 @@ public class BankRepl {
     // Basic command handling for when a user is logged in. Allows personal actions
     private void handleLogin(String command){
         switch(command){
-            case "help" -> System.out.println("Available commands: help, balance, logout");
+            case "help" -> System.out.println("Available commands: help, balance, deposit, logout");
+            case "deposit" -> deposit();
             case "balance" -> System.out.println("Your balance is: " + loggedInAccount.getBalance());
             case "logout" -> loggedInAccount = null;
             default -> throw new IllegalArgumentException(command);
@@ -90,6 +94,23 @@ public class BankRepl {
         } catch (Exception e) {
             System.out.println("Login failed: " + e.getMessage());
             return null;
+        }
+    }
+
+    private void deposit(){
+        System.out.print("How much to deposit: ");
+        int amount = in.nextInt();
+        in.nextLine();
+
+        if(amount <= 0){
+            System.out.println("Amount to deposit must be greater than 0");
+            return;
+        }
+
+        try {
+            transactionService.oneAccountAction(loggedInAccount.getAccountId(), amount);
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
         }
     }
 }

@@ -7,4 +7,6 @@ public interface AccountDAO {
     int createAccount(Account newAccount);
 
     Account login(int accountId, int pin);
+
+    Account updateBalance(int accountId, double amount);
 }

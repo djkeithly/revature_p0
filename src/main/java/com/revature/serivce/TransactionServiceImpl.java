@@ -16,7 +16,7 @@ public class TransactionServiceImpl implements TransactionService {
             try {
                transactionDAO.deposit(fromAccountId, amount);
             } catch (Exception e) {
-                System.out.println("Error making deposit: " + e);
+                System.out.println("Error making deposit: s" + e);
             }
         }
         else if(amount < 0){

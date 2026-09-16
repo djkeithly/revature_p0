@@ -18,8 +18,9 @@ public class AccountDAOImpl implements AccountDAO {
 
     // Inserts value into bank, zero in account balance by default
     // Auto generates id, and then returns it so that we can display it
-    private static final String INSERT_ACCOUNT_SQL = "INSERT INTO account (pin, full_name) VALUES (?, ?) RETURNING account_id";
-    private static final String LOGIN_SQL = "SELECT account_id, pin, full_name, balance FROM account WHERE account_id = ? AND pin = ?";
+    private static final String INSERT_ACCOUNT_SQL = "INSERT INTO account (pin, full_name) VALUES (?, ?) RETURNING account_id;";
+    private static final String LOGIN_SQL = "SELECT account_id, pin, full_name, balance FROM account WHERE account_id = ? AND pin = ?;";
+    private static final String UPDATE_BALANCE_SQL = "UPDATE account SET balance = balance + ? WHERE account_id = ? RETURNING *;";
 
     public AccountDAOImpl() {
         initializeSchema();
@@ -86,6 +87,30 @@ public class AccountDAOImpl implements AccountDAO {
                 }
         } catch (SQLException e){
             throw databaseError("Could not login", e);
+        }
+   }
+
+   @Override 
+   public Account updateBalance(int accountId, double amount){
+        try(Connection connection = ConnectionFactory.getConnectionFactory().getConnection();
+            PreparedStatement statement = connection.prepareStatement(UPDATE_BALANCE_SQL)) {
+                statement.setDouble(1, amount);
+                statement.setInt(2, accountId);
+
+                var resultSet = statement.executeQuery();
+
+                if(resultSet.next()){
+                    int id = resultSet.getInt("account_id");
+                    int accountPin = resultSet.getInt("pin");
+                    String fullName = resultSet.getString("full_name");
+                    double balance = resultSet.getDouble("balance");
+                    return new Account(accountPin, id, fullName, balance);
+                } else {
+                    throw new IllegalStateException("Invalid account");
+                }
+                
+        } catch (SQLException e){
+            throw databaseError("Error updating balance: ", e);
         }
    }
 }

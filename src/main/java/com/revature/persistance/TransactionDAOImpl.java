@@ -4,9 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import com.revature.domain.Account;
 public class TransactionDAOImpl implements TransactionDAO {
+    private final AccountDAO accountDAO;
+
     private final String CREATE_TABLE_SQL = """
-            CREATE TABLE transaction(
+            CREATE TABLE IF NOT EXISTS transaction(
                 transaction_id          SERIAL PRIMARY KEY,
                 from_account_id         INTEGER NOT NULL REFERENCES account(account_id),
                 type                    VARCHAR(20) NOT NULL,
@@ -33,6 +36,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 
     public TransactionDAOImpl() {
         initializeSchema();
+        accountDAO = new AccountDAOImpl();
     }
 
     private void initializeSchema() {
@@ -50,15 +54,44 @@ public class TransactionDAOImpl implements TransactionDAO {
 
     @Override
     public void deposit(int fromAccountId, double amount){
-        try(Connection connection = ConnectionFactory.getConnectionFactory().getConnection();
-        PreparedStatement statement = connection.prepareStatement(INSERT_DEPOSIT_SQL)) {
+        Connection connection = null;
+
+        try{
+            connection = ConnectionFactory.getConnectionFactory().getConnection();
+            PreparedStatement statement = connection.prepareStatement(INSERT_DEPOSIT_SQL);
+
+            // Begin transaction for deposit operation
+            connection.setAutoCommit(false);
+
+            // Handle create deposit record
             statement.setInt(1, fromAccountId);
             statement.setDouble(2, amount);
+            statement.executeUpdate();
 
-            statement.executeQuery();
+            // Handle updating the user
+            Account account = accountDAO.updateBalance(fromAccountId, amount);
+
+            if(account != null){
+                connection.commit();
+                //return account;
+            }
         } catch (Exception e) {
-            throw databaseError("Error depositing", (SQLException) e);
-        }
+            if(connection != null){
+                try {
+                    connection.rollback();
+                } catch (Exception ex) {
+                    System.out.println("Fatal Error: " + e);
+                }
+            }
+            throw new IllegalStateException("Error depositing", e);
+        } finally {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                System.out.println("Fatal Error: " + e);
+            }
+        }}
     }
 
     @Override 
@@ -68,7 +101,7 @@ public class TransactionDAOImpl implements TransactionDAO {
             statement.setInt(1, fromAccountId);
             statement.setDouble(2, amount);
 
-            statement.executeQuery();
+            statement.execute();
         } catch (Exception e) {
             throw databaseError("Error depositing", (SQLException) e);
         }
