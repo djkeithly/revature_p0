@@ -8,6 +8,7 @@ import com.revature.serivce.AccountService;
 public class BankRepl {
     private final Scanner in = new Scanner(System.in);
     private final AccountService accountService;
+    private Account loggedInAccount;
 
     public BankRepl(AccountService accountService) {
         this.accountService = accountService;
@@ -15,7 +16,7 @@ public class BankRepl {
 
     public void run(){
         while(true){
-            System.out.println(">");
+            System.out.print("> ");
             
             String command = in.nextLine();
 
@@ -24,7 +25,11 @@ public class BankRepl {
             }
 
             try{
-                handle(command);
+                if(loggedInAccount == null){
+                    handle(command);
+                } else {
+                    handleLogin(command);
+                }
             }
             catch(IllegalArgumentException e){
                 System.out.println("Invalid command: " + e.getMessage());
@@ -32,23 +37,26 @@ public class BankRepl {
         }
     }
 
+    // Basic command handling for when no user is logged in
     private void handle(String command){
         switch(command){
-            case "help" -> System.out.println("Available commands: help, add, exit");
+            case "help" -> System.out.println("Available commands: help, add, login, exit");
             case "add" -> makeAccount();
-            case "login" -> {Account account = login(); handleLogin(account); }
+            case "login" -> loggedInAccount = login(); 
             default -> throw new IllegalArgumentException(command);
         }
     }
 
-    private void handleLogin(Account account){
-        if(account != null) {
-            System.out.println("Login successful.");
-        } else {
-            System.out.println("Login failed.");
+    // Basic command handling for when a user is logged in. Allows personal actions
+    private void handleLogin(String command){
+        switch(command){
+            case "help" -> System.out.println("Available commands: help, balance, logout");
+            case "balance" -> System.out.println("Your balance is: " + loggedInAccount.getBalance());
+            case "logout" -> loggedInAccount = null;
+            default -> throw new IllegalArgumentException(command);
         }
     }
-
+    
     // Needs to collect name and pin. ID will be auto-generated and balance will default to 0.00
     private void makeAccount(){
         System.out.println("Full name: ");
