@@ -6,8 +6,8 @@ import java.util.Scanner;
 
 import com.revature.domain.Account;
 import com.revature.domain.Transfer;
-import com.revature.serivce.AccountService;
-import com.revature.serivce.TransactionService;
+import com.revature.service.AccountService;
+import com.revature.service.TransactionService;
 
 public class BankRepl {
     private final Scanner in = new Scanner(System.in);
@@ -135,13 +135,8 @@ public class BankRepl {
             in.nextLine();
         }
 
-        if(amount <= 0){
-            System.out.println("Amount to deposit must be a number greater than zero");
-            return;
-        }
-
         try {
-            loggedInAccount =transactionService.oneAccountAction(loggedInAccount.getAccountId(), amount);
+            loggedInAccount =transactionService.deposit(loggedInAccount, amount);
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }
@@ -164,13 +159,9 @@ public class BankRepl {
             System.out.println("Amount to withdraw must be greater than 0");
             return;
         }
-        if(amount > loggedInAccount.getBalance()){
-            System.out.println("Amount to withdraw exceeds your current balance");
-            return;
-        }
 
         try {
-            loggedInAccount = transactionService.oneAccountAction(loggedInAccount.getAccountId(), -amount);
+            loggedInAccount = transactionService.withdraw(loggedInAccount, amount);
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }
@@ -193,17 +184,8 @@ public class BankRepl {
             in.nextLine();
         }
 
-        if(amount <= 0){
-            System.out.println("Amount to transfer must be greater than 0");
-            return;
-        }
-        if(amount > loggedInAccount.getBalance()){
-            System.out.println("Amount to transfer exceeds your current balance");
-            return;
-        }
-
         try {
-            loggedInAccount = transactionService.twoAccountAction(loggedInAccount.getAccountId(), toAccountId, amount);
+            loggedInAccount = transactionService.twoAccountAction(loggedInAccount, toAccountId, amount);
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }

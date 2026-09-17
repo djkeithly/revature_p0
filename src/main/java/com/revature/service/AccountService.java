@@ -1,4 +1,4 @@
-package com.revature.serivce;
+package com.revature.service;
 
 import com.revature.domain.Account;;
 

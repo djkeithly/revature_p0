@@ -11,8 +11,6 @@ import static org.mockito.Mockito.when;
 
 import com.revature.domain.Account;
 import com.revature.persistance.AccountDAO;
-import com.revature.serivce.AccountService;
-import com.revature.serivce.AccountServiceImpl;
 
 public class AccountServiceImplTest {
     private AccountDAO dao;
@@ -40,7 +38,7 @@ public class AccountServiceImplTest {
     void addAccountReturnsAccount(){
         int accountId = 44;
 
-        Account account = new Account(1111, accountId, 0);
+        Account account = new Account(accountId, 0);
 
         when(dao.createAccount(account)).thenReturn(44);
 
@@ -67,11 +65,10 @@ public class AccountServiceImplTest {
         int pin = 1234;
         int accountId= 44;
 
-        when(dao.login(accountId, pin)).thenReturn(new Account(1234,44,0));
+        when(dao.login(accountId, pin)).thenReturn(new Account(44,0));
 
         Account returnAccount = dao.login(accountId, pin);
 
-        assertEquals(pin, returnAccount.getAccountPin());
         assertEquals(accountId, returnAccount.getAccountId());
     }
 
@@ -93,7 +90,7 @@ public class AccountServiceImplTest {
         int newPin = 4321;
         int accountId = 44;
 
-        when(dao.login(accountId, oldPin)).thenReturn(new Account(oldPin, accountId, 0));
+        when(dao.login(accountId, oldPin)).thenReturn(new Account(accountId, 0));
 
         service.updatePin(accountId, oldPin, newPin);
 
@@ -138,7 +135,7 @@ public class AccountServiceImplTest {
         int pin = 1234;
         int accountId = 44;
 
-        when(dao.login(accountId, pin)).thenReturn(new Account(accountId, pin, 0));
+        when(dao.login(accountId, pin)).thenReturn(new Account(pin, 0));
 
         service.deleteAccount(accountId, pin);
 

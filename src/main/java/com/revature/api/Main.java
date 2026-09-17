@@ -5,10 +5,10 @@ import com.revature.persistance.AccountDAO;
 import com.revature.persistance.AccountDAOImpl;
 import com.revature.persistance.TransactionDAO;
 import com.revature.persistance.TransactionDAOImpl;
-import com.revature.serivce.AccountService;
-import com.revature.serivce.AccountServiceImpl;
-import com.revature.serivce.TransactionService;
-import com.revature.serivce.TransactionServiceImpl;
+import com.revature.service.AccountService;
+import com.revature.service.AccountServiceImpl;
+import com.revature.service.TransactionService;
+import com.revature.service.TransactionServiceImpl;
 
 public class Main {
     public static void main(String[] args) {

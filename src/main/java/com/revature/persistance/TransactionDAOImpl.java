@@ -124,7 +124,7 @@ public class TransactionDAOImpl implements TransactionDAO {
             statement.executeUpdate();
 
             // Handle updating the user
-            Account account = accountDAO.updateBalance(fromAccountId, amount);
+            Account account = accountDAO.updateBalance(fromAccountId, -amount);
 
             if(account != null){
                 connection.commit();

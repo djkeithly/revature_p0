@@ -6,8 +6,9 @@ public class Account {
     private double balance;
 
     // Constructor for creating an account with a specified ID (used when retrieving from the database)
-    public Account(int account_pin, int account_id, double balance){
-        this.account_pin = account_pin;
+    // This should not have access to a pin at all
+    public Account(int account_id, double balance){
+        this.account_pin = -1;
         this.account_id = account_id;
         this.balance = balance;
     }

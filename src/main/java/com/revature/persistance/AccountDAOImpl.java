@@ -18,8 +18,8 @@ public class AccountDAOImpl implements AccountDAO {
     // Inserts value into bank, zero in account balance by default
     // Auto generates id, and then returns it so that we can display it
     private static final String INSERT_ACCOUNT_SQL = "INSERT INTO account (pin) VALUES (?) RETURNING account_id;";
-    private static final String LOGIN_SQL = "SELECT account_id, pin, balance FROM account WHERE account_id = ? AND pin = ?;";
-    private static final String UPDATE_BALANCE_SQL = "UPDATE account SET balance = balance + ? WHERE account_id = ? RETURNING *;";
+    private static final String LOGIN_SQL = "SELECT account_id, balance FROM account WHERE account_id = ? AND pin = ?;";
+    private static final String UPDATE_BALANCE_SQL = "UPDATE account SET balance = balance + ? WHERE account_id = ? RETURNING account_id, balance;";
     private static final String UPDATE_PIN_SQL = "UPDATE account SET pin = ? WHERE account_id = ?;";
     private static final String DELETE_ACCOUNT_SQL = "DELETE FROM account WHERE account_id = ?;";
 
@@ -76,9 +76,8 @@ public class AccountDAOImpl implements AccountDAO {
                 var resultSet = statement.executeQuery();
                 if(resultSet.next()){
                     int id = resultSet.getInt("account_id");
-                    int accountPin = resultSet.getInt("pin");
                     double balance = resultSet.getDouble("balance");
-                    return new Account(accountPin, id, balance);
+                    return new Account(id, balance);
                 } else {
                     return null;
                 }
@@ -98,9 +97,8 @@ public class AccountDAOImpl implements AccountDAO {
 
                 if(resultSet.next()){
                     int id = resultSet.getInt("account_id");
-                    int accountPin = resultSet.getInt("pin");
                     double balance = resultSet.getDouble("balance");
-                    return new Account(accountPin, id, balance);
+                    return new Account(id, balance);
                 } else {
                     throw new IllegalStateException("Invalid account");
                 }
