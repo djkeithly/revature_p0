@@ -119,17 +119,4 @@ public class AccountDAOImpl implements AccountDAO {
             throw databaseError("Could not update PIN", e);
         }
    }
-
-   @Override 
-   public void deleteAccount(int accountId){
-        try(Connection connection = ConnectionFactory.getConnectionFactory().getConnection();
-            PreparedStatement statement = connection.prepareStatement(DELETE_ACCOUNT_SQL)) {
-            statement.setInt(1, accountId);
-
-statement.executeUpdate();
-        } catch
- (SQLException e) {
-            throw databaseError("Could not delete account", e);
-        }
-   }
 }

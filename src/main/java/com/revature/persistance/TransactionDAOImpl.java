@@ -155,6 +155,7 @@ public class TransactionDAOImpl implements TransactionDAO {
             connection = ConnectionFactory.getConnectionFactory().getConnection();
             PreparedStatement statement = connection.prepareStatement(INSERT_TRANSFER_SQL);
 
+            // Prevent autoconnection
             connection.setAutoCommit(false);
 
             statement.setInt(1, fromAccountId);
@@ -163,6 +164,10 @@ public class TransactionDAOImpl implements TransactionDAO {
 
             statement.executeUpdate();
 
+            // Give the toAccount the money
+            accountDAO.updateBalance(toAccountId, amount, connection);
+
+            // Take money from the fromAccount
             Account account = accountDAO.updateBalance(fromAccountId, -amount, connection);
 
             if(account != null){

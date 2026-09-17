@@ -57,14 +57,13 @@ public class BankRepl {
     // Basic command handling for when a user is logged in. Allows personal actions
     private void handleLogin(String command){
         switch(command){
-            case "help" -> System.out.println("Available commands: help, balance, deposit, withdraw, transfer, update pin, delete account, history, logout, exit");
+            case "help" -> System.out.println("Available commands: help, balance, deposit, withdraw, transfer, update pin, history, logout, exit");
             case "deposit" -> deposit();
             case "withdraw" -> withdraw();
             case "transfer" -> transfer();
             case "history" -> showHistory(); 
             case "balance" -> System.out.println("Your balance is: " + loggedInAccount.getBalance());
             case "update pin" -> updatePin();
-            case "delete account" -> deleteAccount();
             case "logout" -> loggedInAccount = null;
             default -> throw new IllegalArgumentException(command);
         }
@@ -89,7 +88,7 @@ public class BankRepl {
             int accountId = accountService.createAccount(new Account(pin));
             System.out.println("Your account number is: " + accountId + " ensure you remember this.");
         } catch (Exception e){
-            System.out.println("Account Creation Failed: " + e);
+            System.out.println("Account Creation Failed: " + e.getMessage());
         }
     }
         
@@ -122,11 +121,11 @@ public class BankRepl {
     }
 
     private void deposit(){
-        int amount;
+        double amount;
 
         try{
             System.out.print("How much to deposit: ");
-            amount = in.nextInt();
+            amount = in.nextDouble();
         } catch (InputMismatchException e){
             System.out.println("Input must be a number greater than zero.");
             System.out.println("Quitting deposit function");
@@ -138,16 +137,16 @@ public class BankRepl {
         try {
             loggedInAccount =transactionService.deposit(loggedInAccount, amount);
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            System.out.println("Depositing failed: " + e.getMessage());
         }
     }
 
     private void withdraw(){
-        int amount;
+        double amount;
 
         try{
             System.out.print("How much to withdraw: ");
-            amount = in.nextInt();
+            amount = in.nextDouble();
         } catch (InputMismatchException e){
             System.out.println("Input must be a number greater than zero");
             return;
@@ -163,19 +162,19 @@ public class BankRepl {
         try {
             loggedInAccount = transactionService.withdraw(loggedInAccount, amount);
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            System.out.println("Withdraw failed: " + e.getMessage());
         }
     }
 
     public void transfer(){
         int toAccountId;
-        int amount;
+        double amount;
 
         try{
             System.out.print("Transfer from your account to account id: ");
             toAccountId = in.nextInt();
             System.out.print("Amount to transfer: ");
-            amount = in.nextInt();
+            amount = in.nextDouble();
         } catch (InputMismatchException e) {
             System.out.println("Input incomprehensible");
             System.out.println("Quitting transfer");
@@ -187,7 +186,7 @@ public class BankRepl {
         try {
             loggedInAccount = transactionService.twoAccountAction(loggedInAccount, toAccountId, amount);
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            System.out.println("Transfer failed: " + e.getMessage());
         }
     }
 
@@ -202,7 +201,7 @@ public class BankRepl {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error retrieving transaction history: " + e);
+            System.out.println("Error retrieving transaction history: " + e.getMessage());
         }
     }
 
@@ -228,35 +227,5 @@ public class BankRepl {
         } catch (Exception e) {
             System.out.println("Error updating PIN: " + e.getMessage());
         }
-    }
-
-    public void deleteAccount(){
-        System.out.print("Are you sure you want to delete your account (y/n): ");
-        int pin;
-
-        try{
-            String confirm = in.nextLine();
-            if(confirm.toLowerCase().equals("n"))
-                return;
-            else if (!confirm.toLowerCase().equals("y")){
-                System.out.println("Invalid input, cancelling request");
-                return;
-            }
-
-            System.out.print("Enter PIN: ");
-            pin = in.nextInt();
-            in.nextLine();
-        } catch (InputMismatchException e){
-            System.out.println("Invalid input, cancelling request");
-            return;
-        }
-
-        try {
-            accountService.deleteAccount(loggedInAccount.getAccountId(), pin);
-            loggedInAccount = null;
-        } catch (Exception e) {
-            System.out.println("Error Creating Account: " + e);
-        }
-    
     }
 }

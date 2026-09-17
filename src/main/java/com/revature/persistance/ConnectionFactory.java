@@ -38,7 +38,7 @@ public class ConnectionFactory {
         } catch (SQLException e) {
             // We don't need to create a logger every time we make a connection, we just need a logger to tell us when the database is down.
             Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
-            logger.warn("Connection to database down");
+            logger.error("Connection to database down");
             throw new DatabaseConnectionException("Connection to service lost");
         }
     }

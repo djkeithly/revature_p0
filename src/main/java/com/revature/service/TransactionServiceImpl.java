@@ -42,7 +42,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new IllegalArgumentException("Cannot withdraw more than inside account");
         }
 
-        if(amount <= 0){
+        if(amount <= 0.0){
             logger.error("Account: {} made redundant withdraw of 0", account.getAccountId());
             throw new IllegalArgumentException("Deposit amount cannot be zero");
         } 

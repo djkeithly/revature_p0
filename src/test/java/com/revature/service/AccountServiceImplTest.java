@@ -129,28 +129,4 @@ public class AccountServiceImplTest {
         verifyNoInteractions(dao);
     }
 
-    // Tests a valid delete function
-    @Test
-    void deleteAccountValid(){
-        int pin = 1234;
-        int accountId = 44;
-
-        when(dao.login(accountId, pin)).thenReturn(new Account(pin, 0));
-
-        service.deleteAccount(accountId, pin);
-
-        verify(dao).deleteAccount(accountId);
-    }
-
-    // Tests a delete function where login failed (so no account)
-    void deleteAccountInvalid(){
-        int pin = 1234;
-        int accountId = 44;
-
-        when(dao.login(accountId, pin)).thenReturn(null);
-
-        assertThrows(IllegalArgumentException.class, () -> service.deleteAccount(accountId, pin));
-
-        verifyNoInteractions(dao);
-    }
 }

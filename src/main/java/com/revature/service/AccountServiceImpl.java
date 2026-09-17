@@ -55,15 +55,4 @@ public class AccountServiceImpl implements AccountService {
         accountDAO.updatePin(accountId, newPin);
         logger.info("Account: {} updated their pin.", accountId);
     }
-
-    @Override 
-    public void deleteAccount(int accountId, int pin){
-        Account account = accountDAO.login(accountId, pin);
-        if(account == null){
-            logger.error("Account {} entered the wrong pin to delete their account.", accountId);
-            throw new IllegalArgumentException("Incorrect PIN");
-        }
-        logger.info("Account: {} has been deleted.", accountId);
-        accountDAO.deleteAccount(accountId);
-    }
 }

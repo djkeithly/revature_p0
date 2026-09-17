@@ -9,6 +9,4 @@ public interface AccountService {
     Account login(int accountId, int pin);
 
     void updatePin(int accountId, int oldPin, int newPin);
-
-    void deleteAccount(int accountId, int pin);
 }
