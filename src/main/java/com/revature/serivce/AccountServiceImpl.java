@@ -13,50 +13,41 @@ public class AccountServiceImpl implements AccountService {
 
     @Override 
     public int createAccount(Account newAccount){
-        if(newAccount != null){
-            // Call the DAO layer to add the account
-            try {
-                return accountDAO.createAccount(newAccount);
-            } catch (Exception e) {
-                throw new IllegalStateException("Failed to create account", e);
-            }
-        }
-        else {
-            throw new IllegalArgumentException("Account cannot be null");
-        }
+        if(newAccount == null)
+            throw new IllegalArgumentException("Error receiving new account information, please try again.");
+        else 
+            return accountDAO.createAccount(newAccount);
     }
 
     @Override 
     public Account login(int accountId, int pin){
-        try {
-            return accountDAO.login(accountId, pin);
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to login", e);
-        }
+        Account returnedAccount = accountDAO.login(accountId, pin);
+        if(returnedAccount == null)
+            throw new IllegalArgumentException("Invalid accountId or pin");
+        else
+            return returnedAccount;
     }
 
     @Override
     public void updatePin(int accountId, int oldPin, int newPin) {
-        try {
-            Account account = accountDAO.login(accountId, oldPin);
-            if (account == null) {
-                throw new IllegalArgumentException("Old PIN is incorrect");
-            }
-            accountDAO.updatePin(accountId, newPin);
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to update PIN", e);
+        if(newPin == oldPin){
+            throw new IllegalArgumentException("Old pin and new pin cannot be the same");
         }
+
+        Account account = accountDAO.login(accountId, oldPin);
+
+        if (account == null) {
+            throw new IllegalArgumentException("Old PIN is incorrect");
+        }
+        accountDAO.updatePin(accountId, newPin);
     }
 
     @Override 
     public void deleteAccount(int accountId, int pin){
-        try {
-            Account account = accountDAO.login(accountId, pin);
-            if(account == null){
-                throw new IllegalArgumentException("Incorrect PIN");
-            }
-            accountDAO.deleteAccount(accountId);
-        } catch (Exception e) {
+        Account account = accountDAO.login(accountId, pin);
+        if(account == null){
+            throw new IllegalArgumentException("Incorrect PIN");
         }
+        accountDAO.deleteAccount(accountId);
     }
 }

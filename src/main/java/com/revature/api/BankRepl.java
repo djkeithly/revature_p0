@@ -70,21 +70,30 @@ public class BankRepl {
     
     // Needs to collect pin. ID will be auto-generated and balance will default to 0.00
     private void makeAccount(){
-        System.out.println("Pin number: ");
-        int pin = in.nextInt();
-        in.nextLine(); // consume the newline character after the integer input
+        int pin;
+
+        System.out.print("Pin number: ");
+        try{
+            pin = in.nextInt();
+            in.nextLine(); // consume the newline character after the integer input
+        } catch(Exception e){
+            System.out.println("PIN can only be made of numbers.");
+            System.out.println("Quitting account creation");
+            in.nextLine();
+            return;
+        }
 
         try {
             int accountId = accountService.createAccount(new Account(pin));
             System.out.println("Your account number is: " + accountId + " ensure you remember this.");
-        } catch (Exception e) {
-            System.out.println("Failed to create account.");
+        } catch (Exception e){
+            System.out.println("Account Creation Failed: " + e);
         }
     }
-
+        
     private Account login(){
         System.out.println("Enter Account Id and PIN");
-        System.out.print("Account Id: ");
+        System.out.print("Account Number: ");
         int accountId = in.nextInt();
         System.out.print("PIN: ");
         int pin = in.nextInt();
@@ -120,7 +129,7 @@ public class BankRepl {
     private void withdraw(){
         System.out.print("How much to withdraw: ");
         int amount = in.nextInt();
-        in.nextLine();
+            in.nextLine();
 
         if(amount <= 0){
             System.out.println("Amount to withdraw must be greater than 0");

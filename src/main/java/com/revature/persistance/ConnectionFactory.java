@@ -7,6 +7,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import com.revature.exception.DatabaseConnectionException;
+
 public class ConnectionFactory {
     
     private static final ConnectionFactory connectionFactory = new ConnectionFactory();
@@ -31,7 +33,9 @@ public class ConnectionFactory {
                     props.getProperty("DB_USERNAME"),
                     props.getProperty("DB_PASSWORD"));
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not connect to the database", e);
+            throw new DatabaseConnectionException("Connection to service lost");
         }
     }
+
+    
 }

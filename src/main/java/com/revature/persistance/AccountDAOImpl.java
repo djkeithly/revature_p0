@@ -41,9 +41,7 @@ public class AccountDAOImpl implements AccountDAO {
     }
 
     @Override
-    public int createAccount(Account newAccount) {
-        
-        try(Connection connection = ConnectionFactory.getConnectionFactory().getConnection();
+    public int createAccount(Account newAccount) {try(Connection connection = ConnectionFactory.getConnectionFactory().getConnection();
             PreparedStatement statement = connection.prepareStatement(INSERT_ACCOUNT_SQL)) {
                 // Ensures that failure can be rolled back
                 connection.setAutoCommit(false);
@@ -61,10 +59,10 @@ public class AccountDAOImpl implements AccountDAO {
                     return accountId;
                 } else {
                     connection.rollback();
-                    throw new IllegalStateException("Failed to retrieve generated account_id");
+                    throw new IllegalStateException("Failed to retrieve generated account id");
                 }
         } catch (SQLException e){
-                throw databaseError("Could not add account", (SQLException) e);
+                throw databaseError("Could not add account", e);
          }
     }
 
@@ -82,7 +80,7 @@ public class AccountDAOImpl implements AccountDAO {
                     double balance = resultSet.getDouble("balance");
                     return new Account(accountPin, id, balance);
                 } else {
-                    throw new IllegalStateException("Invalid accountId or pin");
+                    return null;
                 }
         } catch (SQLException e){
             throw databaseError("Could not login", e);
@@ -130,9 +128,10 @@ public class AccountDAOImpl implements AccountDAO {
         try(Connection connection = ConnectionFactory.getConnectionFactory().getConnection();
             PreparedStatement statement = connection.prepareStatement(DELETE_ACCOUNT_SQL)) {
             statement.setInt(1, accountId);
-            
-            statement.executeUpdate();
-        } catch (SQLException e) {
+
+statement.executeUpdate();
+        } catch
+ (SQLException e) {
             throw databaseError("Could not delete account", e);
         }
    }
