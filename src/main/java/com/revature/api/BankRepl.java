@@ -1,5 +1,6 @@
 package com.revature.api;
 
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -23,7 +24,8 @@ public class BankRepl {
         while(true){
             System.out.print("> ");
             
-            String command = in.nextLine();
+            // To lower case just to keep all inputs uniform
+            String command = in.nextLine().toLowerCase();
 
             if(command.equals("exit")){
                 break;
@@ -75,12 +77,12 @@ public class BankRepl {
         System.out.print("Pin number: ");
         try{
             pin = in.nextInt();
-            in.nextLine(); // consume the newline character after the integer input
-        } catch(Exception e){
+        } catch(InputMismatchException e){
             System.out.println("PIN can only be made of numbers.");
             System.out.println("Quitting account creation");
-            in.nextLine();
             return;
+        } finally{
+            in.nextLine();
         }
 
         try {
@@ -92,12 +94,22 @@ public class BankRepl {
     }
         
     private Account login(){
-        System.out.println("Enter Account Id and PIN");
-        System.out.print("Account Number: ");
-        int accountId = in.nextInt();
-        System.out.print("PIN: ");
-        int pin = in.nextInt();
-        in.nextLine(); // consume the newline character after the integer input
+        int accountId;
+        int pin;
+
+        try{
+            System.out.println("Enter Account Id and PIN");
+            System.out.print("Account Number: ");
+            accountId = in.nextInt();
+            System.out.print("PIN: ");
+            pin = in.nextInt();
+        } catch(InputMismatchException e){
+            System.out.println("Incomprehensible inputs.");
+            System.out.println("Quitting login");
+            return null;
+        } finally{
+            in.nextLine();
+        }
 
         try {
             Account account = accountService.login(accountId, pin);
@@ -110,12 +122,21 @@ public class BankRepl {
     }
 
     private void deposit(){
-        System.out.print("How much to deposit: ");
-        int amount = in.nextInt();
-        in.nextLine();
+        int amount;
+
+        try{
+            System.out.print("How much to deposit: ");
+            amount = in.nextInt();
+        } catch (InputMismatchException e){
+            System.out.println("Input must be a number greater than zero.");
+            System.out.println("Quitting deposit function");
+            return;
+        } finally{
+            in.nextLine();
+        }
 
         if(amount <= 0){
-            System.out.println("Amount to deposit must be greater than 0");
+            System.out.println("Amount to deposit must be a number greater than zero");
             return;
         }
 
@@ -127,10 +148,18 @@ public class BankRepl {
     }
 
     private void withdraw(){
-        System.out.print("How much to withdraw: ");
-        int amount = in.nextInt();
-            in.nextLine();
+        int amount;
 
+        try{
+            System.out.print("How much to withdraw: ");
+            amount = in.nextInt();
+        } catch (InputMismatchException e){
+            System.out.println("Input must be a number greater than zero");
+            return;
+        } finally{
+            in.nextLine();
+        }
+        
         if(amount <= 0){
             System.out.println("Amount to withdraw must be greater than 0");
             return;
@@ -148,11 +177,21 @@ public class BankRepl {
     }
 
     public void transfer(){
-        System.out.print("Transfer from your account to account id: ");
-        int toAccountId = in.nextInt();
-        System.out.print("Amount to transfer: ");
-        int amount = in.nextInt();
-        in.nextLine();
+        int toAccountId;
+        int amount;
+
+        try{
+            System.out.print("Transfer from your account to account id: ");
+            toAccountId = in.nextInt();
+            System.out.print("Amount to transfer: ");
+            amount = in.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("Input incomprehensible");
+            System.out.println("Quitting transfer");
+            return;
+        } finally {
+            in.nextLine();
+        }
 
         if(amount <= 0){
             System.out.println("Amount to transfer must be greater than 0");
@@ -186,12 +225,22 @@ public class BankRepl {
     }
 
     public void updatePin(){
-        System.out.print("Enter old PIN: ");
-        int oldPin = in.nextInt();
-        System.out.print("Enter new PIN: ");
-        int newPin = in.nextInt();
-        in.nextLine();
+        int oldPin;
+        int newPin;
 
+        try{
+            System.out.print("Enter old PIN: ");
+            oldPin = in.nextInt();
+            System.out.print("Enter new PIN: ");
+            newPin = in.nextInt();
+        } catch (InputMismatchException e){
+            System.out.println("Input incomprehensible");
+            System.out.println("Quitting transfer");
+            return;
+        } finally {
+            in.nextLine();
+        }
+        
         try {
             accountService.updatePin(loggedInAccount.getAccountId(), oldPin, newPin);
         } catch (Exception e) {
@@ -215,7 +264,7 @@ public class BankRepl {
             System.out.print("Enter PIN: ");
             pin = in.nextInt();
             in.nextLine();
-        } catch (Exception e){
+        } catch (InputMismatchException e){
             System.out.println("Invalid input, cancelling request");
             return;
         }

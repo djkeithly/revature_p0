@@ -103,32 +103,57 @@ public class AccountServiceImplTest {
     // Ensures that if oldPin and newPin are the same, error is thrown
     @Test 
     void updatePinSamePin() {
-    int oldPin = 1234;
-    int newPin = 1234;
-    int accountId = 44;
+        int oldPin = 1234;
+        int newPin = 1234;
+        int accountId = 44;
 
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> service.updatePin(accountId, oldPin, newPin)
-    );
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> service.updatePin(accountId, oldPin, newPin)
+        );
 
-    verifyNoInteractions(dao);
+        verifyNoInteractions(dao);
     }
 
     // Ensures that if the account being changes does not exist, error is thrown
     @Test 
     void updatePinSameNoAccount(){
         int oldPin = 1234;
-    int newPin = 1234;
-    int accountId = 44;
+        int newPin = 1234;
+        int accountId = 44;
 
-    when(dao.login(accountId, oldPin)).thenReturn(null);
+        when(dao.login(accountId, oldPin)).thenReturn(null);
 
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> service.updatePin(accountId, oldPin, newPin)
-    );
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> service.updatePin(accountId, oldPin, newPin)
+        );
 
-    verifyNoInteractions(dao);
+        verifyNoInteractions(dao);
+    }
+
+    // Tests a valid delete function
+    @Test
+    void deleteAccountValid(){
+        int pin = 1234;
+        int accountId = 44;
+
+        when(dao.login(accountId, pin)).thenReturn(new Account(accountId, pin, 0));
+
+        service.deleteAccount(accountId, pin);
+
+        verify(dao).deleteAccount(accountId);
+    }
+
+    // Tests a delete function where login failed (so no account)
+    void deleteAccountInvalid(){
+        int pin = 1234;
+        int accountId = 44;
+
+        when(dao.login(accountId, pin)).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class, () -> service.deleteAccount(accountId, pin));
+
+        verifyNoInteractions(dao);
     }
 }
