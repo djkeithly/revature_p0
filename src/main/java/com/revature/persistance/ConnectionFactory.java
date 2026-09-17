@@ -7,6 +7,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.revature.exception.DatabaseConnectionException;
 
 public class ConnectionFactory {
@@ -33,6 +36,9 @@ public class ConnectionFactory {
                     props.getProperty("DB_USERNAME"),
                     props.getProperty("DB_PASSWORD"));
         } catch (SQLException e) {
+            // We don't need to create a logger every time we make a connection, we just need a logger to tell us when the database is down.
+            Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
+            logger.warn("Connection to database down");
             throw new DatabaseConnectionException("Connection to service lost");
         }
     }

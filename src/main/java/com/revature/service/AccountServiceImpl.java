@@ -31,7 +31,7 @@ public class AccountServiceImpl implements AccountService {
     public Account login(int accountId, int pin){
         Account returnedAccount = accountDAO.login(accountId, pin);
         if(returnedAccount == null){
-            logger.warn("Incorrect sign in for account: {}.", accountId);
+            logger.error("Incorrect sign in for account: {}.", accountId);
             throw new IllegalArgumentException("Invalid accountId or pin");
         } else {
             logger.info("Account {}, successfully validated.", accountId);
@@ -42,14 +42,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void updatePin(int accountId, int oldPin, int newPin) {
         if(newPin == oldPin){
-            logger.warn("The old pin is the same as new pin for account: {}.", accountId);
+            logger.error("The old pin is the same as new pin for account: {}.", accountId);
             throw new IllegalArgumentException("Old pin and new pin cannot be the same");
         }
 
         Account account = accountDAO.login(accountId, oldPin);
 
         if (account == null) {
-            logger.warn("Account {} entered the wrong pin to update pin.", accountId);
+            logger.error("Account {} entered the wrong pin to update pin.", accountId);
             throw new IllegalArgumentException("Old PIN is incorrect");
         }
         accountDAO.updatePin(accountId, newPin);
@@ -60,7 +60,7 @@ public class AccountServiceImpl implements AccountService {
     public void deleteAccount(int accountId, int pin){
         Account account = accountDAO.login(accountId, pin);
         if(account == null){
-            logger.warn("Account {} entered the wrong pin to delete their account.", accountId);
+            logger.error("Account {} entered the wrong pin to delete their account.", accountId);
             throw new IllegalArgumentException("Incorrect PIN");
         }
         logger.info("Account: {} has been deleted.", accountId);

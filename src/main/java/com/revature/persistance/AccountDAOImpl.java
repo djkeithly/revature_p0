@@ -87,9 +87,8 @@ public class AccountDAOImpl implements AccountDAO {
    }
 
    @Override 
-   public Account updateBalance(int accountId, double amount){
-        try(Connection connection = ConnectionFactory.getConnectionFactory().getConnection();
-            PreparedStatement statement = connection.prepareStatement(UPDATE_BALANCE_SQL)) {
+   public Account updateBalance(int accountId, double amount, Connection connection){
+        try(PreparedStatement statement = connection.prepareStatement(UPDATE_BALANCE_SQL)) {
                 statement.setDouble(1, amount);
                 statement.setInt(2, accountId);
 

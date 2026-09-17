@@ -1,5 +1,7 @@
 package com.revature.persistance;
 
+import java.sql.Connection;
+
 import com.revature.domain.Account;
 
 public interface AccountDAO {
@@ -8,7 +10,8 @@ public interface AccountDAO {
 
     Account login(int accountId, int pin);
 
-    Account updateBalance(int accountId, double amount);
+    // This is only called after a deposit/withdraw and thus can accept a connection
+    Account updateBalance(int accountId, double amount, Connection connection);
 
     void updatePin(int accountId, int newPin);
 

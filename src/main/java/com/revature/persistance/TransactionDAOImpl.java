@@ -81,12 +81,10 @@ public class TransactionDAOImpl implements TransactionDAO {
             statement.executeUpdate();
 
             // Handle updating the user
-            Account account = accountDAO.updateBalance(fromAccountId, amount);
+            Account account = accountDAO.updateBalance(fromAccountId, amount, connection);
 
-            if(account != null){
-                connection.commit();
-                return account;
-            }
+            connection.commit();
+            return account;
         } catch (Exception e) {
             if(connection != null){
                 try {
@@ -104,7 +102,6 @@ public class TransactionDAOImpl implements TransactionDAO {
                 System.out.println("Fatal Error: " + e);
             }
         }}
-        return null;
     }
 
     @Override 
@@ -124,7 +121,7 @@ public class TransactionDAOImpl implements TransactionDAO {
             statement.executeUpdate();
 
             // Handle updating the user
-            Account account = accountDAO.updateBalance(fromAccountId, -amount);
+            Account account = accountDAO.updateBalance(fromAccountId, -amount, connection);
 
             if(account != null){
                 connection.commit();
@@ -166,9 +163,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 
             statement.executeUpdate();
 
-            accountDAO.updateBalance(toAccountId, amount);
-
-            Account account = accountDAO.updateBalance(fromAccountId, -amount);
+            Account account = accountDAO.updateBalance(fromAccountId, -amount, connection);
 
             if(account != null){
                 connection.commit();

@@ -24,7 +24,7 @@ public class TransactionServiceImpl implements TransactionService {
         Account newAccount;
 
         if(amount <= 0){
-            logger.warn("Account: {} made redundant deposit of 0", account.getAccountId());
+            logger.error("Account: {} made redundant deposit of 0", account.getAccountId());
             throw new IllegalArgumentException("Deposit amount cannot be zero");
         } 
         
@@ -38,12 +38,12 @@ public class TransactionServiceImpl implements TransactionService {
         Account newAccount;
 
         if (account.getBalance() < amount) {
-            logger.warn("Account: {} attempted to overdraw.", account.getAccountId());
+            logger.error("Account: {} attempted to overdraw.", account.getAccountId());
             throw new IllegalArgumentException("Cannot withdraw more than inside account");
         }
 
         if(amount <= 0){
-            logger.warn("Account: {} made redundant withdraw of 0", account.getAccountId());
+            logger.error("Account: {} made redundant withdraw of 0", account.getAccountId());
             throw new IllegalArgumentException("Deposit amount cannot be zero");
         } 
         
@@ -57,16 +57,16 @@ public class TransactionServiceImpl implements TransactionService {
         int fromAccountId = account.getAccountId();
 
         if(account.getBalance() < amount){
-            logger.warn("Account: {} attemped to transfer more than was inside account.", fromAccountId);
+            logger.error("Account: {} attemped to transfer more than was inside account.", fromAccountId);
             throw new IllegalArgumentException("Cannot transfer more money than is in account");
         } else if(amount == 0) {
-            logger.warn("Account: {} attempted to send no money to account: {}", fromAccountId, toAccountId);
+            logger.error("Account: {} attempted to send no money to account: {}", fromAccountId, toAccountId);
             throw new IllegalArgumentException("Transaction amount cannot be zero.");
         } else if(amount < 0) {
-            logger.warn("Account: {} attempted to transfer {} from account: {}", fromAccountId, -amount, toAccountId);
+            logger.error("Account: {} attempted to transfer {} from account: {}", fromAccountId, -amount, toAccountId);
             throw new IllegalArgumentException("Transaction amount must be positive.");
         } else if (fromAccountId == toAccountId) {
-            logger.warn("Account: {} attempted to transfer money to themselves.", fromAccountId);
+            logger.error("Account: {} attempted to transfer money to themselves.", fromAccountId);
             throw new IllegalArgumentException("Cannot transfer money to own account.");
         } else {
             Account newAccount = transactionDAO.transfer(fromAccountId, toAccountId, amount);
