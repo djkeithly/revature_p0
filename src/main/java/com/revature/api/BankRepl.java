@@ -244,7 +244,7 @@ public class BankRepl {
         try {
             accountService.updatePin(loggedInAccount.getAccountId(), oldPin, newPin);
         } catch (Exception e) {
-            System.out.println("Error updating PIN: " + e);
+            System.out.println("Error updating PIN: " + e.getMessage());
         }
     }
 
