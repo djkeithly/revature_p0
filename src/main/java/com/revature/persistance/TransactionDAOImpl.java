@@ -175,8 +175,6 @@ public class TransactionDAOImpl implements TransactionDAO {
                 return account;
             }
 
-
-
         } catch (Exception e) {
             if(connection != null){
                 try {
@@ -187,13 +185,14 @@ public class TransactionDAOImpl implements TransactionDAO {
             }
             throw new IllegalStateException("Error withdrawing", e);
         } finally {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                System.out.println("Fatal Error: " + e);
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    System.out.println("Fatal Error: " + e);
+                }
             }
-        }}
+        }
         return null;
     }
 

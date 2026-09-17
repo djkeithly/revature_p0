@@ -15,51 +15,32 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override 
     public Account oneAccountAction(int fromAccountId, double amount){
-
         if(amount > 0){
-            try {
-               return transactionDAO.deposit(fromAccountId, amount);
-            } catch (Exception e) {
-                System.out.println("Error making deposit: s" + e);
-            }
+            return transactionDAO.deposit(fromAccountId, amount);
         }
         else if(amount < 0){
-            try {
-                return transactionDAO.withdraw(fromAccountId, amount);
-            } catch (Exception e) {
-                System.out.println("Error making withdraw " + e);
-            }
+            return transactionDAO.withdraw(fromAccountId, amount);
         }
         else{
-            System.out.println("Error: No transaction action");
+            throw new IllegalArgumentException("Transaction amount cannot be zero.");
         }
-        return null;
     }
 
     @Override 
     public Account twoAccountAction(int fromAccountId, int toAccountId, double amount){
-        if(amount <= 0){
-            throw new IllegalArgumentException("Transaction must have some money made to an account");
+        if(amount == 0){
+            throw new IllegalArgumentException("Transaction amount cannot be zero.");
+        } else if(amount < 0){
+            throw new IllegalArgumentException("Transaction amount must be positive.");
         } else if (fromAccountId == toAccountId){
-            throw new IllegalArgumentException("Cannot transfer money to own account");
+            throw new IllegalArgumentException("Cannot transfer money to own account.");
         } else {
-            try {
-                return transactionDAO.transfer(fromAccountId, toAccountId, amount);
-            } catch (Exception e) {
-                System.out.println("Error making transfer: " + e);
-            }
+            return transactionDAO.transfer(fromAccountId, toAccountId, amount);
         }
-
-        return null;
     }
 
     @Override
     public List<Transfer> getAllTransactions(int accountId){
-        try{
-            return transactionDAO.getAllTransfers(accountId);
-        } catch (Exception e){
-            System.out.println("Error retrieving transactions: " + e);
-        }
-        return null;
+        return transactionDAO.getAllTransfers(accountId);
     }
 }
