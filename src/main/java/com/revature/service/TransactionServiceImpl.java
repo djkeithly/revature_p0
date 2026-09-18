@@ -23,10 +23,13 @@ public class TransactionServiceImpl implements TransactionService {
     public Account deposit(Account account, double amount){
         Account newAccount;
 
-        if(amount <= 0){
+        if(amount == 0){
             logger.error("Account: {} made redundant deposit of 0", account.getAccountId());
             throw new IllegalArgumentException("Deposit amount cannot be zero");
-        } 
+        } else if (amount < 0){
+            logger.error("Account: {} attempted to deposit negative money.", account.getAccountId());
+            throw new IllegalArgumentException("Deposit amount cannot be negative.");
+        }
         
         newAccount = transactionDAO.deposit(account.getAccountId(), amount);
         logger.info("Account: {} deposited ${}", account.getAccountId(), amount);
@@ -42,10 +45,13 @@ public class TransactionServiceImpl implements TransactionService {
             throw new IllegalArgumentException("Cannot withdraw more than inside account");
         }
 
-        if(amount <= 0.0){
+        if(amount == 0.0){
             logger.error("Account: {} made redundant withdraw of 0", account.getAccountId());
-            throw new IllegalArgumentException("Deposit amount cannot be zero");
-        } 
+            throw new IllegalArgumentException("Withdraw amount cannot be zero");
+        } else if (amount < 0){
+            logger.error("Account: {} attempted to withdraw negative money.", account.getAccountId());
+            throw new IllegalArgumentException("Withdraw amount cannot be negative.");
+        }
         
         newAccount = transactionDAO.withdraw(account.getAccountId(), amount);
         logger.info("Account: {} withdrew ${}", account.getAccountId(), amount);

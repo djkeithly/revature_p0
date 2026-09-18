@@ -20,6 +20,9 @@ public class AccountServiceImpl implements AccountService {
         if(newAccount == null){
             logger.error("Account generation failed");
             throw new IllegalArgumentException("Error receiving new account information, please try again.");
+        } else if(newAccount.getAccountPin() <= 0){
+            logger.error("Invalid PIN attempted to be entered");
+            throw new IllegalArgumentException("PIN must exist and be a positive integer");
         } else {
             int accountNumber = accountDAO.createAccount(newAccount);
             logger.info("Account with id: {} created.", accountNumber);
@@ -44,6 +47,10 @@ public class AccountServiceImpl implements AccountService {
         if(newPin == oldPin){
             logger.error("The old pin is the same as new pin for account: {}.", accountId);
             throw new IllegalArgumentException("Old pin and new pin cannot be the same");
+        }
+        if(newPin <= 0){
+            logger.error("Account: {} attempted to enter an illegal pin.");
+            throw new IllegalArgumentException("PIN must exist and be a positive integer");
         }
 
         Account account = accountDAO.login(accountId, oldPin);

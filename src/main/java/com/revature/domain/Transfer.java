@@ -41,11 +41,11 @@ public class Transfer {
     @Override 
     public String toString(){
         return "Transfer id: " + id +
-                " [fromAccountId=" + fromAccountId +
-                ", toAccountId=" + toAccountId +
-                ", amount=" + amount +
-                ", type='" + type + '\'' +
-                ", timestamp='" + timestamp + '\'' +
+                " [Account=" + fromAccountId +
+                ", Made to Account=" + (toAccountId == 0 ? fromAccountId : toAccountId) +
+                ", Amount=" + amount +
+                ", Type of transaction='" + type + '\'' +
+                ", Timestamp='" + timestamp + '\'' +
                 ']';
     }
 }
