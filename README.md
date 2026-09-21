@@ -2,6 +2,8 @@
 
 This is a simple bank account system run inside of the terminal. This application is hooked up to a docker file which contains a postgresql database (implementation inside of the ERD in the documents directory).
 
+This is a Java project, designed to be built in Maven using postgres and docker. Testing uses Junit 5.
+
 ## Setup instructions
 
 Backend Built through docker using this command:

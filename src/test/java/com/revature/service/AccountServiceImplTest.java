@@ -25,7 +25,7 @@ public class AccountServiceImplTest {
     // Ensure that an account can be added
     // Positive test
     @Test 
-    void addAccountStoresAccount(){
+    void addAccountValidStoresAccount(){
         Account account = new Account(1111);
 
         service.createAccount(account);
@@ -35,10 +35,11 @@ public class AccountServiceImplTest {
 
     // Ensure that an account id is returned when creating an account
     @Test 
-    void addAccountReturnsAccount(){
+    void addAccountValidReturnsAccount(){
         int accountId = 44;
+        int pin = 1234;
 
-        Account account = new Account(accountId, 0);
+        Account account = new Account(pin);
 
         when(dao.createAccount(account)).thenReturn(44);
 
@@ -50,10 +51,25 @@ public class AccountServiceImplTest {
     // Ensures that createAccount's error handling works for no AccountId
     // Negative test
     @Test
-    void addAccountNoAccountId(){
+    void addAccountInvalidNoAccountId(){
         assertThrows(
             IllegalArgumentException.class,
             () -> service.createAccount(null)
+        );
+
+        verifyNoInteractions(dao);
+    }
+
+    // Ensure that a pin cannot be negative in createAccount
+    // Negative test
+    @Test
+    void addAccountInvalidNegativePin(){
+        int pin = -20;
+        Account account = new Account(pin);
+
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> service.createAccount(account)
         );
 
         verifyNoInteractions(dao);
@@ -99,7 +115,7 @@ public class AccountServiceImplTest {
 
     // Ensures that if oldPin and newPin are the same, error is thrown
     @Test 
-    void updatePinSamePin() {
+    void updatePinInvalidSamePin() {
         int oldPin = 1234;
         int newPin = 1234;
         int accountId = 44;
@@ -114,12 +130,27 @@ public class AccountServiceImplTest {
 
     // Ensures that if the account being changes does not exist, error is thrown
     @Test 
-    void updatePinSameNoAccount(){
+    void updatePinInvalidSameNoAccount(){
         int oldPin = 1234;
         int newPin = 1234;
         int accountId = 44;
 
         when(dao.login(accountId, oldPin)).thenReturn(null);
+
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> service.updatePin(accountId, oldPin, newPin)
+        );
+
+        verifyNoInteractions(dao);
+    }
+
+    // Ensures that a new pin cannot be changed to an illegal pin (<=0)
+    @Test
+    void updatePinInvalidIllegalPin(){
+        int oldPin = 1234;
+        int newPin = 0;
+        int accountId = 44;
 
         assertThrows(
             IllegalArgumentException.class,

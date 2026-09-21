@@ -15,6 +15,9 @@ public class AccountServiceImpl implements AccountService {
         logger = LoggerFactory.getLogger(AccountService.class);
     }
 
+    // This needs to be provided with an Account Object defined by the second constructor in the Account.java domain
+    // newAccount(accountId = -1, accountPin = <USER DEFINED>, balance = 0);
+    // This should be the only function to take the above definition
     @Override 
     public int createAccount(Account newAccount){
         if(newAccount == null){
@@ -35,7 +38,7 @@ public class AccountServiceImpl implements AccountService {
         Account returnedAccount = accountDAO.login(accountId, pin);
         if(returnedAccount == null){
             logger.error("Incorrect sign in for account: {}.", accountId);
-            throw new IllegalArgumentException("Invalid accountId or pin");
+            throw new IllegalArgumentException("Invalid account id or pin");
         } else {
             logger.info("Account {}, successfully validated.", accountId);
             return returnedAccount;

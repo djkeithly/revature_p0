@@ -21,7 +21,6 @@ public class AccountDAOImpl implements AccountDAO {
     private static final String LOGIN_SQL = "SELECT account_id, balance FROM account WHERE account_id = ? AND pin = ?;";
     private static final String UPDATE_BALANCE_SQL = "UPDATE account SET balance = balance + ? WHERE account_id = ? RETURNING account_id, balance;";
     private static final String UPDATE_PIN_SQL = "UPDATE account SET pin = ? WHERE account_id = ?;";
-    private static final String DELETE_ACCOUNT_SQL = "DELETE FROM account WHERE account_id = ?;";
 
     public AccountDAOImpl() {
         initializeSchema();

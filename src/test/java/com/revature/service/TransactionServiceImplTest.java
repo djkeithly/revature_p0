@@ -22,9 +22,9 @@ public class TransactionServiceImplTest {
         service = new TransactionServiceImpl(dao);
     }
 
-    // Test a valid oneAccountAction, deposit
+    // Test a valid deposit
     @Test
-    void oneAccountActionDeposit(){
+    void depositValid(){
         int fromAccountId = 44;
         int amount = 50;
 
@@ -39,9 +39,9 @@ public class TransactionServiceImplTest {
         verify(dao).deposit(fromAccountId, amount);
     }
 
-    // Test a valid withdraw. A withdraw just has negative money
+    // Test a valid withdraw
     @Test 
-    void oneAccountActionWithraw(){
+    void withdrawValid(){
         int fromAccountId = 44;
         int amount = 50;
         Account startAccount = new Account(fromAccountId, amount);
@@ -61,6 +61,21 @@ public class TransactionServiceImplTest {
 
         assertThrows(IllegalArgumentException.class, 
             () -> service.deposit(startAccount, amount));
+
+        verifyNoInteractions(dao);
+    }
+
+    // Test an invalid withdraw where a user is attempting to over withdraw
+    @Test
+    void withdrawInvalidOverdraft(){
+        int fromAccountId = 44;
+        int amount = 100;
+        Account account = new Account(fromAccountId, amount - 50);
+
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> service.withdraw(account, amount)
+        );
 
         verifyNoInteractions(dao);
     }
