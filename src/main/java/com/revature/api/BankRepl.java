@@ -11,7 +11,10 @@ import com.revature.service.TransactionService;
 
 public class BankRepl {
     private final Scanner in = new Scanner(System.in);
+
+    // Will contain amount and accountId, never PIN
     private final AccountService accountService;
+    
     private final TransactionService transactionService;
     private Account loggedInAccount;
 
@@ -73,7 +76,7 @@ public class BankRepl {
     private void makeAccount(){
         int pin;
 
-        System.out.print("Pin number: ");
+        System.out.print("Pin number (Must be 4 digits and not start with a zero): ");
         try{
             pin = in.nextInt();
         } catch(InputMismatchException e){

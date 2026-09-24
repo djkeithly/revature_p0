@@ -14,4 +14,6 @@ public interface AccountDAO {
     Account updateBalance(int accountId, double amount, Connection connection);
 
     void updatePin(int accountId, int newPin);
+
+    boolean findAccount(int accountId);
 }

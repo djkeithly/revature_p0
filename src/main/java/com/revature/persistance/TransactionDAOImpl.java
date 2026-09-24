@@ -155,6 +155,10 @@ public class TransactionDAOImpl implements TransactionDAO {
             connection = ConnectionFactory.getConnectionFactory().getConnection();
             PreparedStatement statement = connection.prepareStatement(INSERT_TRANSFER_SQL);
 
+            // Check account to transfer to exists, if not throw error
+            if(!accountDAO.findAccount(toAccountId))
+                return null;
+
             // Prevent autoconnection
             connection.setAutoCommit(false);
 

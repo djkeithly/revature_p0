@@ -76,6 +76,10 @@ public class TransactionServiceImpl implements TransactionService {
             throw new IllegalArgumentException("Cannot transfer money to own account.");
         } else {
             Account newAccount = transactionDAO.transfer(fromAccountId, toAccountId, amount);
+            if(newAccount == null){
+                logger.error("Account: {} attempted to transfer to an account that does not exist");
+                throw new IllegalArgumentException("Account to transfer to does not exist");
+            }
             logger.info("Account: {} transferred${} to account: {}", fromAccountId, amount, toAccountId);
             return newAccount;
         }

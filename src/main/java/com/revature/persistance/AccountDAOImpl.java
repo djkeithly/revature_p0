@@ -2,6 +2,7 @@ package com.revature.persistance;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.revature.domain.Account;
@@ -9,7 +10,7 @@ import com.revature.domain.Account;
 public class AccountDAOImpl implements AccountDAO {
     private static final String CREATE_TABLE_SQL = """
             CREATE TABLE IF NOT EXISTS account(
-                account_id      INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                account_id      INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1000) PRIMARY KEY,
                 pin             INTEGER NOT NULL,
                 balance         NUMERIC DEFAULT 0.00
             );
@@ -21,6 +22,7 @@ public class AccountDAOImpl implements AccountDAO {
     private static final String LOGIN_SQL = "SELECT account_id, balance FROM account WHERE account_id = ? AND pin = ?;";
     private static final String UPDATE_BALANCE_SQL = "UPDATE account SET balance = balance + ? WHERE account_id = ? RETURNING account_id, balance;";
     private static final String UPDATE_PIN_SQL = "UPDATE account SET pin = ? WHERE account_id = ?;";
+    private static final String FIND_ACCOUNT = "SELECT 1 FROM account WHERE account_id = ?;";
 
     public AccountDAOImpl() {
         initializeSchema();
@@ -116,6 +118,20 @@ public class AccountDAOImpl implements AccountDAO {
             statement.executeUpdate();
         } catch (SQLException e) {
             throw databaseError("Could not update PIN", e);
+        }
+   }
+
+   @Override 
+   public boolean findAccount(int accountId) {
+        try(Connection connection = ConnectionFactory.getConnectionFactory().getConnection();
+            PreparedStatement statement = connection.prepareStatement(FIND_ACCOUNT)) {
+            statement.setInt(1, accountId);
+
+            ResultSet checker = statement.executeQuery();
+            return checker.next();
+
+        } catch (SQLException e){
+            throw databaseError("Error fetching account", e);
         }
    }
 }

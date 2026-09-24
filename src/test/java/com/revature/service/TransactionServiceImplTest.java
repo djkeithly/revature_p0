@@ -88,6 +88,8 @@ public class TransactionServiceImplTest {
         int amount = 100;
         Account account = new Account(fromAccountId, amount);
 
+        when(dao.transfer(fromAccountId, toAccountId, amount)).thenReturn(account); // Would not actually be valid data but simulates that both accounts are valid
+
         service.twoAccountAction(account, toAccountId, amount);
 
         verify(dao).transfer(fromAccountId, toAccountId, amount);
