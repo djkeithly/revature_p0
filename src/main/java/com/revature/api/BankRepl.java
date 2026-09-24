@@ -115,7 +115,7 @@ public class BankRepl {
 
         try {
             Account account = accountService.login(accountId, pin);
-            System.out.println("Welcome, " + account.getAccountId() + ". Your balance is: " + account.getBalance());
+            System.out.println("Welcome, account " + account.getAccountId() + ". Your balance is: $" + String.format("%,.2f", account.getBalance()));
             return account;
         } catch (Exception e) {
             System.out.println("Login failed: " + e.getMessage());

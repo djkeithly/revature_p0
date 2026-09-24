@@ -31,6 +31,9 @@ public class TransactionServiceImpl implements TransactionService {
             throw new IllegalArgumentException("Deposit amount cannot be negative.");
         }
         
+        // Keeps the amount of money at 2 decimals.
+        amount = Math.round(amount * 100) / 100;
+
         newAccount = transactionDAO.deposit(account.getAccountId(), amount);
         logger.info("Account: {} deposited ${}", account.getAccountId(), amount);
         return newAccount;
@@ -52,6 +55,9 @@ public class TransactionServiceImpl implements TransactionService {
             logger.error("Account: {} attempted to withdraw negative money.", account.getAccountId());
             throw new IllegalArgumentException("Withdraw amount cannot be negative.");
         }
+
+        // Keeps the amount of money at 2 decimals.
+        amount = Math.round(amount * 100) / 100;
         
         newAccount = transactionDAO.withdraw(account.getAccountId(), amount);
         logger.info("Account: {} withdrew ${}", account.getAccountId(), amount);
@@ -63,7 +69,7 @@ public class TransactionServiceImpl implements TransactionService {
         int fromAccountId = account.getAccountId();
 
         if(account.getBalance() < amount){
-            logger.error("Account: {} attemped to transfer more than was inside account.", fromAccountId);
+            logger.error("Account: {} attempted to transfer more than was inside account.", fromAccountId);
             throw new IllegalArgumentException("Cannot transfer more money than is in account");
         } else if(amount == 0) {
             logger.error("Account: {} attempted to send no money to account: {}", fromAccountId, toAccountId);
@@ -75,6 +81,9 @@ public class TransactionServiceImpl implements TransactionService {
             logger.error("Account: {} attempted to transfer money to themselves.", fromAccountId);
             throw new IllegalArgumentException("Cannot transfer money to own account.");
         } else {
+            // Keeps the amount of money at 2 decimals.
+            amount = Math.round(amount * 100) / 100;
+
             Account newAccount = transactionDAO.transfer(fromAccountId, toAccountId, amount);
             if(newAccount == null){
                 logger.error("Account: {} attempted to transfer to an account that does not exist");

@@ -38,14 +38,14 @@ public class Transfer {
         return type;
     }
 
+    // toString will show when an account was, made, what type, and what the amount was.
+    // It will show an account if there was an account that a transfer was made to
     @Override 
     public String toString(){
-        return "Transfer id: " + id +
-                " [Account=" + fromAccountId +
-                ", Made to Account=" + (toAccountId == 0 ? fromAccountId : toAccountId) +
-                ", Amount=" + amount +
-                ", Type of transaction='" + type + '\'' +
-                ", Timestamp='" + timestamp + '\'' +
+        return  "[Type of transaction: " + type +
+                ", Amount: $" + String.format("%,.2f", amount) +
+                (type.equals("Transfer") ? (", Made to Account: " + toAccountId) : "") +
+                ", Timestamp: " + timestamp +
                 ']';
     }
 }
