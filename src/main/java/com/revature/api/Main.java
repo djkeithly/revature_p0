@@ -1,10 +1,10 @@
 package com.revature.api;
 
 import com.revature.exception.DatabaseConnectionException;
-import com.revature.persistance.AccountDAO;
-import com.revature.persistance.AccountDAOImpl;
-import com.revature.persistance.TransactionDAO;
-import com.revature.persistance.TransactionDAOImpl;
+import com.revature.persistence.AccountDAO;
+import com.revature.persistence.AccountDAOImpl;
+import com.revature.persistence.TransactionDAO;
+import com.revature.persistence.TransactionDAOImpl;
 import com.revature.service.AccountService;
 import com.revature.service.AccountServiceImpl;
 import com.revature.service.TransactionService;

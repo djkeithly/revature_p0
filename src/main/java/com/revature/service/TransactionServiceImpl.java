@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.revature.domain.Account;
 import com.revature.domain.Transfer;
-import com.revature.persistance.TransactionDAO;
+import com.revature.persistence.TransactionDAO;
 
 public class TransactionServiceImpl implements TransactionService {
     private final TransactionDAO transactionDAO;

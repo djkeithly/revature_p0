@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.revature.domain.Account;
-import com.revature.persistance.AccountDAO;
+import com.revature.persistence.AccountDAO;
 
 public class AccountServiceImpl implements AccountService {
     private final AccountDAO accountDAO;

@@ -1,4 +1,4 @@
-package com.revature.persistance;
+package com.revature.persistence;
 
 import java.util.List;
 

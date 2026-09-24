@@ -10,7 +10,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.revature.domain.Account;
-import com.revature.persistance.AccountDAO;
+import com.revature.persistence.AccountDAO;
 
 public class AccountServiceImplTest {
     private AccountDAO dao;

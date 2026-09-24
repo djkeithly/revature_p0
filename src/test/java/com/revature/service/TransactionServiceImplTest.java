@@ -10,7 +10,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.revature.domain.Account;
-import com.revature.persistance.TransactionDAO;
+import com.revature.persistence.TransactionDAO;
 
 public class TransactionServiceImplTest {
     private TransactionDAO dao;

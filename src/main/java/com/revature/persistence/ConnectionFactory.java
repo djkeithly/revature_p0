@@ -1,4 +1,4 @@
-package com.revature.persistance;
+package com.revature.persistence;
 
 import java.io.FileReader;
 import java.io.IOException;
