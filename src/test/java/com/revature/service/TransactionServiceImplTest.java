@@ -1,5 +1,8 @@
 package com.revature.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,29 +29,31 @@ public class TransactionServiceImplTest {
     @Test
     void depositValid(){
         int fromAccountId = 44;
-        int amount = 50;
+        BigDecimal amount = BigDecimal.valueOf(50);
+        BigDecimal roundedAmount = amount.setScale(2, RoundingMode.UP);
 
-        Account startAccount = new Account(fromAccountId, 0);
-        Account expected = new Account(fromAccountId, amount);
+        Account startAccount = new Account(fromAccountId, BigDecimal.ZERO);
+        Account expected = new Account(fromAccountId, roundedAmount);
 
-        when(dao.deposit(fromAccountId, amount)).thenReturn(expected);
+        when(dao.deposit(fromAccountId, roundedAmount)).thenReturn(expected);
 
         Account actual = service.deposit(startAccount, amount);
 
-        assertEquals(expected, actual);
-        verify(dao).deposit(fromAccountId, amount);
+        assertEquals(expected.getBalance().doubleValue(), actual.getBalance().doubleValue());
+        verify(dao).deposit(fromAccountId, roundedAmount);
     }
 
     // Test a valid withdraw
     @Test 
     void withdrawValid(){
         int fromAccountId = 44;
-        int amount = 50;
+        BigDecimal amount = BigDecimal.valueOf(50);
+        BigDecimal roundedAmount = amount.setScale(2, RoundingMode.UP);
         Account startAccount = new Account(fromAccountId, amount);
 
         service.withdraw(startAccount, amount);
 
-        verify(dao).withdraw(fromAccountId, amount);
+        verify(dao).withdraw(fromAccountId, roundedAmount);
     }
 
     // Test an invalid one account action by not moving money
@@ -56,8 +61,8 @@ public class TransactionServiceImplTest {
     @Test
     void oneAccountActionInvalidNoMoney(){
         int fromAccountId = 44;
-        int amount = 0;
-        Account startAccount = new Account(fromAccountId, 0);
+        BigDecimal amount = BigDecimal.ZERO;
+        Account startAccount = new Account(fromAccountId, amount);
 
         assertThrows(IllegalArgumentException.class, 
             () -> service.deposit(startAccount, amount));
@@ -69,8 +74,8 @@ public class TransactionServiceImplTest {
     @Test
     void withdrawInvalidOverdraft(){
         int fromAccountId = 44;
-        int amount = 100;
-        Account account = new Account(fromAccountId, amount - 50);
+        BigDecimal amount = BigDecimal.valueOf(100);
+        Account account = new Account(fromAccountId, amount.subtract(BigDecimal.valueOf(50)));
 
         assertThrows(
             IllegalArgumentException.class,
@@ -85,14 +90,15 @@ public class TransactionServiceImplTest {
     void twoAccountActionValid(){
         int fromAccountId = 44;
         int toAccountId = 34;
-        int amount = 100;
+        BigDecimal amount = BigDecimal.valueOf(100);
+        BigDecimal roundedAmount = amount.setScale(2, RoundingMode.UP);
         Account account = new Account(fromAccountId, amount);
 
-        when(dao.transfer(fromAccountId, toAccountId, amount)).thenReturn(account); // Would not actually be valid data but simulates that both accounts are valid
+        when(dao.transfer(fromAccountId, toAccountId, roundedAmount)).thenReturn(account); // Would not actually be valid data but simulates that both accounts are valid
 
         service.twoAccountAction(account, toAccountId, amount);
 
-        verify(dao).transfer(fromAccountId, toAccountId, amount);
+        verify(dao).transfer(fromAccountId, toAccountId, roundedAmount);
     }
 
     // Test that an account can't transfer money to itself
@@ -100,7 +106,7 @@ public class TransactionServiceImplTest {
     void twoAccountActionInvalidSameAccount(){
         int fromAccountId = 44;
         int toAccountId = 44;
-        int amount = 100;
+        BigDecimal amount = BigDecimal.valueOf(100);
         Account account = new Account(fromAccountId, amount);
 
         assertThrows(IllegalArgumentException.class, 
@@ -115,8 +121,8 @@ public class TransactionServiceImplTest {
     void twoAccountActionInvalidNoMoney(){
         int fromAccountId = 44;
         int toAccountId = 34;
-        int amount = 0;
-        Account account = new Account(fromAccountId, 100);
+        BigDecimal amount = BigDecimal.ZERO;
+        Account account = new Account(fromAccountId, BigDecimal.valueOf(100));
 
         assertThrows(IllegalArgumentException.class, 
             () -> service.twoAccountAction(account, toAccountId, amount)

@@ -1,13 +1,15 @@
 package com.revature.domain;
 
+import java.math.BigDecimal;
+
 public class Account {
     private final int account_id;
     private final int account_pin;
-    private double balance;
+    private BigDecimal balance;
 
     // Constructor for creating an account with a specified ID (used when retrieving from the database)
     // This should not have access to a pin at all
-    public Account(int account_id, double balance){
+    public Account(int account_id, BigDecimal balance){
         this.account_pin = -1;
         this.account_id = account_id;
         this.balance = balance;
@@ -17,7 +19,7 @@ public class Account {
     public Account(int account_pin){
         this.account_pin = account_pin;
         this.account_id = -1;
-        this.balance = 0;
+        this.balance = BigDecimal.ZERO;
     }
 
     public int getAccountId(){
@@ -28,19 +30,19 @@ public class Account {
         return account_pin;
     }
     
-    public double getBalance(){
+    public BigDecimal getBalance(){
         return balance;
     }
 
-    public void deposit(double amount){
-        if(amount > 0){
-            this.balance += amount;
+    public void deposit(BigDecimal amount){
+        if(amount.compareTo(BigDecimal.ZERO) > 0){
+            this.balance.add(amount);
         }
     }
 
-    public boolean withdraw(double amount){
-        if(amount > 0 && amount <= this.balance){
-            this.balance -= amount;
+    public boolean withdraw(BigDecimal amount){
+        if(amount.compareTo(BigDecimal.ZERO) < 0 && amount.compareTo(this.balance) >= 0){
+            this.balance.subtract(amount);
             return true;
         }
         return false;

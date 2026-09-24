@@ -1,5 +1,6 @@
 package com.revature.persistence;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -77,7 +78,7 @@ public class AccountDAOImpl implements AccountDAO {
                 var resultSet = statement.executeQuery();
                 if(resultSet.next()){
                     int id = resultSet.getInt("account_id");
-                    double balance = resultSet.getDouble("balance");
+                    BigDecimal balance = resultSet.getBigDecimal("balance");
                     return new Account(id, balance);
                 } else {
                     return null;
@@ -88,16 +89,16 @@ public class AccountDAOImpl implements AccountDAO {
    }
 
    @Override 
-   public Account updateBalance(int accountId, double amount, Connection connection){
+   public Account updateBalance(int accountId, BigDecimal amount, Connection connection){
         try(PreparedStatement statement = connection.prepareStatement(UPDATE_BALANCE_SQL)) {
-                statement.setDouble(1, amount);
+                statement.setBigDecimal(1, amount);
                 statement.setInt(2, accountId);
 
                 var resultSet = statement.executeQuery();
 
                 if(resultSet.next()){
                     int id = resultSet.getInt("account_id");
-                    double balance = resultSet.getDouble("balance");
+                    BigDecimal balance = resultSet.getBigDecimal("balance");
                     return new Account(id, balance);
                 } else {
                     throw new IllegalStateException("Invalid account");

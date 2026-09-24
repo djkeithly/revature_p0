@@ -24,21 +24,24 @@ public class AccountServiceImpl implements AccountService {
         if(newAccount == null){
             logger.error("Account generation failed");
             throw new IllegalArgumentException("Error receiving new account information, please try again.");
-        } else if(newAccount.getAccountPin() <= 0){
-            logger.error("Invalid PIN attempted to be entered.");
-            throw new IllegalArgumentException("PIN must exist and be a positive integer.");
         }
 
         // Check PIN is of valid length
-        String pinChecker = String.valueOf(newAccount.getAccountPin());
-
-        if(pinChecker.length() != 4){
+        int pin = newAccount.getAccountPin();
+        if(pin < 1000 || pin > 9999){
             logger.error("Invalid PIN attempted to be entered.");
-            throw new IllegalArgumentException("PIN must be at least 4 digits long.");
+            throw new IllegalArgumentException("PIN must be a positive 4 digits long.");
         }
 
         // Run command
-        int accountNumber = accountDAO.createAccount(newAccount);
+        int accountNumber;
+        try{
+            accountNumber = accountDAO.createAccount(newAccount);
+        } catch (IllegalStateException e){
+            logger.error("Unexpected error when attempting to create account");
+            throw new IllegalStateException("Unknown error. Please try again.");
+        }
+
         logger.info("Account with id: {} created.", accountNumber);
         return accountNumber;   
     }
@@ -46,13 +49,20 @@ public class AccountServiceImpl implements AccountService {
     @Override 
     public Account login(int accountId, int pin){
         // Check PIN is of valid length
-        if(String.valueOf(pin).length() != 4){
+        if(pin < 1000 || pin > 9999){
             logger.error("Invalid PIN for account: {}.", accountId);
             throw new IllegalArgumentException("Invalid PIN");
         }
 
         // Run login
-        Account returnedAccount = accountDAO.login(accountId, pin);
+        Account returnedAccount;
+
+        try{
+            returnedAccount = accountDAO.login(accountId, pin);
+        } catch (IllegalStateException e){
+            logger.error("Unexpected error when account: {} attempted to login: " + e, accountId);
+            throw new IllegalStateException("Unknown error. Please try again.");
+        }
 
         // Check login state
         if(returnedAccount == null){
@@ -67,25 +77,28 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void updatePin(int accountId, int oldPin, int newPin) {
         // Check to see that PINs are of valid length
-        if(String.valueOf(oldPin).length() != 4 || String.valueOf(newPin).length() != 4){
-            logger.error("Invalid PIN for account: {} on an attempt to update PIN.", accountId);
-            throw new IllegalArgumentException("PIN must be 4 digits or more");
+        if(newPin < 1000 || newPin > 9999 || oldPin < 1000 || oldPin > 9999){
+            logger.warn("Invalid PIN for account: {} on an attempt to update PIN.", accountId);
+            throw new IllegalArgumentException("PIN must be a positive 4 digits");
         }
 
         // Check base PIN inputs are valid
         if(newPin == oldPin){
-            logger.error("The old pin is the same as new PIN for account: {}.", accountId);
+            logger.warn("The old pin is the same as new PIN for account: {}.", accountId);
             throw new IllegalArgumentException("Old PIN and new PIN cannot be the same.");
         }
-        if(newPin <= 0){
-            logger.error("Account: {} attempted to enter an illegal pin.");
-            throw new IllegalArgumentException("PIN must exist and be a positive integer.");
+
+        Account account;
+
+        try{
+            account = accountDAO.login(accountId, oldPin);
+        } catch (IllegalStateException e){
+            logger.error("Unexpected error when account: {} attempted to update pin: " + e, accountId);
+            throw new IllegalStateException("Unknown error. Please try again.");
         }
 
-        Account account = accountDAO.login(accountId, oldPin);
-
         if (account == null) {
-            logger.error("Account {} entered the wrong pin to update pin.", accountId);
+            logger.warn("Account {} entered the wrong pin to update pin.", accountId);
             throw new IllegalArgumentException("Old PIN is incorrect.");
         }
         accountDAO.updatePin(accountId, newPin);

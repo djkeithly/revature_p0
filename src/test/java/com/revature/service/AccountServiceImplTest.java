@@ -1,5 +1,7 @@
 package com.revature.service;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,7 +100,7 @@ public class AccountServiceImplTest {
         int pin = 1234;
         int accountId= 44;
 
-        when(dao.login(accountId, pin)).thenReturn(new Account(44,0));
+        when(dao.login(accountId, pin)).thenReturn(new Account(44,BigDecimal.ZERO));
 
         Account returnAccount = dao.login(accountId, pin);
 
@@ -141,7 +143,7 @@ public class AccountServiceImplTest {
         int newPin = 4321;
         int accountId = 44;
 
-        when(dao.login(accountId, oldPin)).thenReturn(new Account(accountId, 0));
+        when(dao.login(accountId, oldPin)).thenReturn(new Account(accountId, BigDecimal.ZERO));
 
         service.updatePin(accountId, oldPin, newPin);
 

@@ -1,5 +1,6 @@
 package com.revature.api;
 
+import java.math.BigDecimal;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -65,7 +66,7 @@ public class BankRepl {
             case "withdraw" -> withdraw();
             case "transfer" -> transfer();
             case "history" -> showHistory(); 
-            case "balance" -> System.out.println("Your balance is: " + loggedInAccount.getBalance());
+            case "balance" -> System.out.println("Your balance is: $" + String.format("%,.2f", loggedInAccount.getBalance()));
             case "update pin" -> updatePin();
             case "logout" -> loggedInAccount = null;
             default -> throw new IllegalArgumentException(command);
@@ -124,11 +125,11 @@ public class BankRepl {
     }
 
     private void deposit(){
-        double amount;
+        BigDecimal amount;
 
         try{
             System.out.print("How much to deposit: ");
-            amount = in.nextDouble();
+            amount = in.nextBigDecimal();
         } catch (InputMismatchException e){
             System.out.println("Input must be a number greater than zero.");
             System.out.println("Quitting deposit function");
@@ -145,21 +146,16 @@ public class BankRepl {
     }
 
     private void withdraw(){
-        double amount;
+        BigDecimal amount;
 
         try{
             System.out.print("How much to withdraw: ");
-            amount = in.nextDouble();
+            amount = in.nextBigDecimal();
         } catch (InputMismatchException e){
             System.out.println("Input must be a number greater than zero");
             return;
         } finally{
             in.nextLine();
-        }
-        
-        if(amount <= 0){
-            System.out.println("Amount to withdraw must be greater than 0");
-            return;
         }
 
         try {
@@ -171,13 +167,13 @@ public class BankRepl {
 
     public void transfer(){
         int toAccountId;
-        double amount;
+        BigDecimal amount;
 
         try{
             System.out.print("Transfer from your account to account id: ");
             toAccountId = in.nextInt();
             System.out.print("Amount to transfer: ");
-            amount = in.nextDouble();
+            amount = in.nextBigDecimal();
         } catch (InputMismatchException e) {
             System.out.println("Input incomprehensible");
             System.out.println("Quitting transfer");

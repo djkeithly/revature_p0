@@ -1,5 +1,6 @@
 package com.revature.persistence;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -65,7 +66,7 @@ public class TransactionDAOImpl implements TransactionDAO {
     }
 
     @Override
-    public Account deposit(int fromAccountId, double amount){
+    public Account deposit(int fromAccountId, BigDecimal amount){
         Connection connection = null;
 
         try{
@@ -77,7 +78,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 
             // Handle create deposit record
             statement.setInt(1, fromAccountId);
-            statement.setDouble(2, amount);
+            statement.setBigDecimal(2, amount);
             statement.executeUpdate();
 
             // Handle updating the user
@@ -105,7 +106,7 @@ public class TransactionDAOImpl implements TransactionDAO {
     }
 
     @Override 
-    public Account withdraw(int fromAccountId, double amount){
+    public Account withdraw(int fromAccountId, BigDecimal amount){
         Connection connection = null;
 
         try{
@@ -117,11 +118,11 @@ public class TransactionDAOImpl implements TransactionDAO {
 
             // Handle create deposit record
             statement.setInt(1, fromAccountId);
-            statement.setDouble(2, amount);
+            statement.setBigDecimal(2, amount);
             statement.executeUpdate();
 
             // Handle updating the user
-            Account account = accountDAO.updateBalance(fromAccountId, -amount, connection);
+            Account account = accountDAO.updateBalance(fromAccountId, amount.negate(), connection);
 
             if(account != null){
                 connection.commit();
@@ -148,7 +149,7 @@ public class TransactionDAOImpl implements TransactionDAO {
     }
 
     @Override
-    public Account transfer(int fromAccountId, int toAccountId, double amount){
+    public Account transfer(int fromAccountId, int toAccountId, BigDecimal amount){
         Connection connection = null;
 
         try {
@@ -164,7 +165,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 
             statement.setInt(1, fromAccountId);
             statement.setInt(2, toAccountId);
-            statement.setDouble(3, amount);
+            statement.setBigDecimal(3, amount);
 
             statement.executeUpdate();
 
@@ -172,7 +173,7 @@ public class TransactionDAOImpl implements TransactionDAO {
             accountDAO.updateBalance(toAccountId, amount, connection);
 
             // Take money from the fromAccount
-            Account account = accountDAO.updateBalance(fromAccountId, -amount, connection);
+            Account account = accountDAO.updateBalance(fromAccountId, amount.negate(), connection);
 
             if(account != null){
                 connection.commit();
