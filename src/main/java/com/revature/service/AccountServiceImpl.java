@@ -19,24 +19,24 @@ public class AccountServiceImpl implements AccountService {
     // newAccount(accountId = -1, accountPin = <USER DEFINED>, balance = 0);
     // This should be the only function to take the above definition
     @Override 
-    public int createAccount(Account newAccount){
+    public int createAccount(String pin){
         // Check to make sure base inputs are valid
-        if(newAccount == null){
-            logger.error("Account generation failed");
-            throw new IllegalArgumentException("Error receiving new account information, please try again.");
+        int pinVal;
+        try{
+            pinVal = Integer.parseInt(pin);
+        } catch(Exception e) {
+            throw new IllegalArgumentException("Invalid PIN.");
         }
 
-        // Check PIN is of valid length
-        int pin = newAccount.getAccountPin();
-        if(pin < 1000 || pin > 9999){
-            logger.error("Invalid PIN attempted to be entered.");
-            throw new IllegalArgumentException("PIN must be a positive 4 digits long.");
+        if(pinVal < 1 || pinVal > 9999 || pin.length() != 4){
+            logger.warn("Invalid PIN attempted to be entered.");
+            throw new IllegalArgumentException("PIN must be positive and 4 digits long.");
         }
 
         // Run command
         int accountNumber;
         try{
-            accountNumber = accountDAO.createAccount(newAccount);
+            accountNumber = accountDAO.createAccount(pin);
         } catch (IllegalStateException e){
             logger.error("Unexpected error when attempting to create account");
             throw new IllegalStateException("Unknown error. Please try again.");
@@ -47,10 +47,17 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override 
-    public Account login(int accountId, int pin){
+    public Account login(int accountId, String pin){
+        int pinNum;
+        try {
+            pinNum = Integer.parseInt(pin);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid PIN.");
+        }
+
         // Check PIN is of valid length
-        if(pin < 1000 || pin > 9999){
-            logger.error("Invalid PIN for account: {}.", accountId);
+        if(pinNum < 1 || pinNum > 9999 || pin.length() != 4){
+            logger.warn("Invalid PIN for account: {}.", accountId);
             throw new IllegalArgumentException("Invalid PIN");
         }
 
@@ -66,7 +73,7 @@ public class AccountServiceImpl implements AccountService {
 
         // Check login state
         if(returnedAccount == null){
-            logger.error("Incorrect sign in for account: {}.", accountId);
+            logger.warn("Incorrect sign in for account: {}.", accountId);
             throw new IllegalArgumentException("Invalid account id or PIN.");
         } else {
             logger.info("Account {}, successfully validated.", accountId);
@@ -75,15 +82,25 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void updatePin(int accountId, int oldPin, int newPin) {
+    public void updatePin(int accountId, String oldPin, String newPin) {
+        int oldPinNum;
+        int newPinNum;
+        try {
+            oldPinNum = Integer.parseInt(oldPin);
+            newPinNum = Integer.parseInt(newPin);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid PIN.");
+        }
+
+
         // Check to see that PINs are of valid length
-        if(newPin < 1000 || newPin > 9999 || oldPin < 1000 || oldPin > 9999){
+        if(newPinNum < 1000 || newPinNum > 9999 || newPin.length() != 4 || oldPinNum < 1000 || oldPinNum > 9999 || oldPin.length() != 4){
             logger.warn("Invalid PIN for account: {} on an attempt to update PIN.", accountId);
             throw new IllegalArgumentException("PIN must be a positive 4 digits");
         }
 
         // Check base PIN inputs are valid
-        if(newPin == oldPin){
+        if(newPinNum == oldPinNum){
             logger.warn("The old pin is the same as new PIN for account: {}.", accountId);
             throw new IllegalArgumentException("Old PIN and new PIN cannot be the same.");
         }

@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public class Account {
     private final int account_id;
     private final int account_pin;
-    private BigDecimal balance;
+    private final BigDecimal balance;
 
     // Constructor for creating an account with a specified ID (used when retrieving from the database)
     // This should not have access to a pin at all

@@ -12,8 +12,8 @@ public class AccountDAOImpl implements AccountDAO {
     private static final String CREATE_TABLE_SQL = """
             CREATE TABLE IF NOT EXISTS account(
                 account_id      INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1000) PRIMARY KEY,
-                pin             INTEGER NOT NULL,
-                balance         NUMERIC DEFAULT 0.00
+                pin             VARCHAR(4) NOT NULL,
+                balance         NUMERIC(12, 2) DEFAULT 0.00
             );
             """;
 
@@ -43,13 +43,14 @@ public class AccountDAOImpl implements AccountDAO {
     }
 
     @Override
-    public int createAccount(Account newAccount) {try(Connection connection = ConnectionFactory.getConnectionFactory().getConnection();
+    public int createAccount(String pin) {
+        try(Connection connection = ConnectionFactory.getConnectionFactory().getConnection();
             PreparedStatement statement = connection.prepareStatement(INSERT_ACCOUNT_SQL)) {
                 // Ensures that failure can be rolled back
                 connection.setAutoCommit(false);
 
                 // Set data
-                statement.setInt(1, newAccount.getAccountPin());
+                statement.setString(1, pin);
 
                 // Executes and is returned 1 account_id to return to the user
                 var resultSet = statement.executeQuery();
@@ -70,11 +71,11 @@ public class AccountDAOImpl implements AccountDAO {
 
     // Checks if account credentials are valid and returns the corresponding Account object
     @Override 
-    public Account login(int accountId, int pin) {
+    public Account login(int accountId, String pin) {
         try(Connection connection = ConnectionFactory.getConnectionFactory().getConnection();
             PreparedStatement statement = connection.prepareStatement(LOGIN_SQL)) {
                 statement.setInt(1, accountId);
-                statement.setInt(2, pin);
+                statement.setString(2, pin);
                 var resultSet = statement.executeQuery();
                 if(resultSet.next()){
                     int id = resultSet.getInt("account_id");
@@ -110,10 +111,10 @@ public class AccountDAOImpl implements AccountDAO {
    }
 
    @Override
-   public void updatePin(int accountId, int newPin){
+   public void updatePin(int accountId, String newPin){
         try(Connection connection = ConnectionFactory.getConnectionFactory().getConnection();
             PreparedStatement statement = connection.prepareStatement(UPDATE_PIN_SQL)) {
-            statement.setInt(1, newPin);
+            statement.setString(1, newPin);
             statement.setInt(2, accountId);
 
             statement.executeUpdate();

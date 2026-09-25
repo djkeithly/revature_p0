@@ -28,11 +28,11 @@ public class AccountServiceImplTest {
     // Positive test
     @Test 
     void addAccountValidStoresAccount(){
-        Account account = new Account(1111);
+        String pin = "1111";
 
-        service.createAccount(account);
+        service.createAccount(pin);
 
-        verify(dao).createAccount(account);
+        verify(dao).createAccount(pin);
     }
 
     // Ensure that an account id is returned when creating an account
@@ -40,13 +40,11 @@ public class AccountServiceImplTest {
     @Test 
     void addAccountValidReturnsAccount(){
         int accountId = 44;
-        int pin = 1234;
+        String pin = "1234";
 
-        Account account = new Account(pin);
+        when(dao.createAccount(pin)).thenReturn(44);
 
-        when(dao.createAccount(account)).thenReturn(44);
-
-        int id = service.createAccount(account);
+        int id = service.createAccount(pin);
 
         assertEquals(accountId, id);   
     }
@@ -67,12 +65,11 @@ public class AccountServiceImplTest {
     // Negative test
     @Test
     void addAccountInvalidNegativePin(){
-        int pin = -2000;
-        Account account = new Account(pin);
+        String pin = "-2000";
 
         assertThrows(
             IllegalArgumentException.class,
-            () -> service.createAccount(account)
+            () -> service.createAccount(pin)
         );
 
         verifyNoInteractions(dao);
@@ -82,12 +79,11 @@ public class AccountServiceImplTest {
     // Negative test
     @Test 
     void addAccountInvalidInvalidPin(){
-        int pin = 12;
-        Account account = new Account(pin);
+        String pin = "12";
 
         assertThrows(
             IllegalArgumentException.class, 
-            () -> service.createAccount(account)
+            () -> service.createAccount(pin)
         );
 
         verifyNoInteractions(dao);
@@ -97,12 +93,12 @@ public class AccountServiceImplTest {
     // Positive Test
     @Test
     void loginTestValid(){
-        int pin = 1234;
+        String pin = "1234";
         int accountId= 44;
 
         when(dao.login(accountId, pin)).thenReturn(new Account(44,BigDecimal.ZERO));
 
-        Account returnAccount = dao.login(accountId, pin);
+        Account returnAccount = service.login(accountId, pin);
 
         assertEquals(accountId, returnAccount.getAccountId());
     }
@@ -111,7 +107,7 @@ public class AccountServiceImplTest {
     // Negative Test
     @Test 
     void loginTestInvalid(){
-        int pin = 1234;
+        String pin = "1234";
         int accountId = 44;
 
         when(dao.login(accountId, pin)).thenReturn(null);
@@ -126,7 +122,7 @@ public class AccountServiceImplTest {
     // Negative Test
     @Test 
     void loginTestInvalidPin(){
-        int pin = 12;
+        String pin = "12";
         int accountId = 44;
 
         assertThrows(
@@ -139,8 +135,8 @@ public class AccountServiceImplTest {
     // Positive Test
     @Test
     void updatePinValid(){
-        int oldPin = 1234;
-        int newPin = 4321;
+        String oldPin = "1234";
+        String newPin = "4321";
         int accountId = 44;
 
         when(dao.login(accountId, oldPin)).thenReturn(new Account(accountId, BigDecimal.ZERO));
@@ -154,8 +150,8 @@ public class AccountServiceImplTest {
     // Negative Test
     @Test 
     void updatePinInvalidSamePin() {
-        int oldPin = 1234;
-        int newPin = 1234;
+        String oldPin = "1234";
+        String newPin = "1234";
         int accountId = 44;
 
         assertThrows(
@@ -170,8 +166,8 @@ public class AccountServiceImplTest {
     // Negative Test
     @Test 
     void updatePinInvalidSameNoAccount(){
-        int oldPin = 1234;
-        int newPin = 1234;
+        String oldPin = "1234";
+        String newPin = "1234";
         int accountId = 44;
 
         when(dao.login(accountId, oldPin)).thenReturn(null);
@@ -188,8 +184,8 @@ public class AccountServiceImplTest {
     // Negative Test
     @Test
     void updatePinInvalidIllegalPin(){
-        int oldPin = 1234;
-        int newPin = -1234;
+        String oldPin = "1234";
+        String newPin = "-1234";
         int accountId = 44;
 
         assertThrows(
@@ -204,8 +200,8 @@ public class AccountServiceImplTest {
     // Negative test
     @Test 
     void updatePinInvalidIlnvalidPIN(){
-        int oldPin = 1234;
-        int newPin = 123;
+        String oldPin = "1234";
+        String newPin = "123";
         int accountId = 44;
 
         assertThrows(

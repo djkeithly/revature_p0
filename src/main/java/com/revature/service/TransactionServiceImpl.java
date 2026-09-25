@@ -24,10 +24,10 @@ public class TransactionServiceImpl implements TransactionService {
     @Override 
     public Account deposit(Account account, BigDecimal amount){
         if(amount.compareTo(BigDecimal.valueOf(0)) == 0){
-            logger.error("Account: {} made redundant deposit of 0", account.getAccountId());
+            logger.warn("Account: {} made redundant deposit of 0", account.getAccountId());
             throw new IllegalArgumentException("Deposit amount cannot be zero");
         } else if (amount.compareTo(BigDecimal.valueOf(0)) < 0){
-            logger.error("Account: {} attempted to deposit negative money.", account.getAccountId());
+            logger.warn("Account: {} attempted to deposit negative money.", account.getAccountId());
             throw new IllegalArgumentException("Deposit amount cannot be negative.");
         }
         
@@ -49,15 +49,15 @@ public class TransactionServiceImpl implements TransactionService {
     @Override 
     public Account withdraw(Account account, BigDecimal amount){
         if (account.getBalance().compareTo(amount) < 0) {
-            logger.error("Account: {} attempted to overdraw.", account.getAccountId());
+            logger.warn("Account: {} attempted to overdraw.", account.getAccountId());
             throw new IllegalArgumentException("Cannot withdraw more than inside account");
         }
 
         if(amount.compareTo(BigDecimal.valueOf(0)) == 0){
-            logger.error("Account: {} made redundant withdraw of 0", account.getAccountId());
+            logger.warn("Account: {} made redundant withdraw of 0", account.getAccountId());
             throw new IllegalArgumentException("Withdraw amount cannot be zero");
         } else if (amount.compareTo(BigDecimal.valueOf(0)) < 0){
-            logger.error("Account: {} attempted to withdraw negative money.", account.getAccountId());
+            logger.warn("Account: {} attempted to withdraw negative money.", account.getAccountId());
             throw new IllegalArgumentException("Withdraw amount cannot be negative.");
         }
 
@@ -81,16 +81,16 @@ public class TransactionServiceImpl implements TransactionService {
         int fromAccountId = account.getAccountId();
 
         if(account.getBalance().compareTo(amount) < 0){
-            logger.error("Account: {} attempted to transfer more than was inside account.", fromAccountId);
+            logger.warn("Account: {} attempted to transfer more than was inside account.", fromAccountId);
             throw new IllegalArgumentException("Cannot transfer more money than is in account");
         } else if(amount.compareTo(BigDecimal.valueOf(0)) == 0) {
-            logger.error("Account: {} attempted to send no money to account: {}", fromAccountId, toAccountId);
+            logger.warn("Account: {} attempted to send no money to account: {}", fromAccountId, toAccountId);
             throw new IllegalArgumentException("Transaction amount cannot be zero.");
         } else if(amount.compareTo(BigDecimal.valueOf(0)) < 0) {
-            logger.error("Account: {} attempted to transfer {} from account: {}", fromAccountId, amount.negate(), toAccountId);
+            logger.warn("Account: {} attempted to transfer {} from account: {}", fromAccountId, amount.negate(), toAccountId);
             throw new IllegalArgumentException("Transaction amount must be positive.");
         } else if (fromAccountId == toAccountId) {
-            logger.error("Account: {} attempted to transfer money to themselves.", fromAccountId);
+            logger.warn("Account: {} attempted to transfer money to themselves.", fromAccountId);
             throw new IllegalArgumentException("Cannot transfer money to own account.");
         }
         
@@ -106,7 +106,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         if(newAccount == null){
-            logger.error("Account: {} attempted to transfer to an account that does not exist");
+            logger.warn("Account: {} attempted to transfer to an account that does not exist");
             throw new IllegalArgumentException("Account to transfer to does not exist");
         }
         logger.info("Account: {} transferred${} to account: {}", fromAccountId, amount, toAccountId);

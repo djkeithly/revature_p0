@@ -44,7 +44,7 @@ public class Transfer {
     public String toString(){
         return  "[Type of transaction: " + type +
                 ", Amount: $" + String.format("%,.2f", amount) +
-                (type.equals("Transfer") ? (", Made to Account: " + toAccountId) : "") +
+                (type.equals("Transfer") ? (", Made to Account: " + toAccountId) + " from Account: " + fromAccountId : "") +
                 ", Timestamp: " + timestamp +
                 ']';
     }

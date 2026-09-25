@@ -7,14 +7,14 @@ import com.revature.domain.Account;
 
 public interface AccountDAO {
     // Must be int to return account_id
-    int createAccount(Account newAccount);
+    int createAccount(String pin);
 
-    Account login(int accountId, int pin);
+    Account login(int accountId, String pin);
 
     // This is only called after a deposit/withdraw and thus can accept a connection
     Account updateBalance(int accountId, BigDecimal amount, Connection connection);
 
-    void updatePin(int accountId, int newPin);
+    void updatePin(int accountId, String newPin);
 
     boolean findAccount(int accountId);
 }
