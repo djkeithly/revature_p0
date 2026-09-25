@@ -77,7 +77,7 @@ public class BankRepl {
     
     // Needs to collect pin. ID will be auto-generated and balance will default to 0.00
     private void makeAccount(){
-        System.out.print("Pin number (Must be 4 digits and not start with a zero): ");
+        System.out.print("Pin number (Must be 4 digits): ");
 
         String pin = in.nextLine();
 
